@@ -5,6 +5,7 @@ package com.ondemand.tools.perflog.kafka.consumer;
  * @created 07/11/2022 - 2:43 PM
  * @description
  */
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import com.ondemand.tools.perflog.models.CallStack;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -34,17 +35,20 @@ public class Config {
     private String jaas;
 
     @Bean
-    public ConsumerFactory<String, CallStack> consumerFactory() {
+    public Map<String, Object> consumerConfig() {
         Map<String, Object> properties = new HashMap<>();
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         //Set these if using SASL authentication or Confluent Cloud
         properties.put("security.protocol", "SASL_SSL");
         properties.put("sasl.mechanism", "PLAIN");
         properties.put("sasl.jaas.config", jaas);
-        return new DefaultKafkaConsumerFactory<>(properties);
+        return properties;
+    }
+    @Bean
+    public ConsumerFactory<String, CallStack> consumerFactory() {
+        return new DefaultKafkaConsumerFactory<>( consumerConfig(), new StringDeserializer()
+                , new JsonDeserializer(CallStack.class));
     }
 
     @Bean
@@ -52,6 +56,7 @@ public class Config {
         ConcurrentKafkaListenerContainerFactory<String, CallStack> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
+        factory.setConcurrency(3);
         return factory;
     }
 }
