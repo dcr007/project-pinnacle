@@ -5,6 +5,7 @@
 # for Zookepper nc -z localhost 22181
 # To check the verbose logs while the containers are starting up and verify that the Kafka server is up:
 # docker-compose logs kafka | grep -i started
+# To install mongoDB : $ sudo docker run -d --name mongodb -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password -p 27017:27017 mongo
 version: '2'
 services:
   zookeeper:
