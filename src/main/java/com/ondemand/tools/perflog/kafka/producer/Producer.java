@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Component
@@ -34,7 +35,7 @@ public final class Producer {
 
     public void sendMessage(CallStack callStack) {
         String topicName = "perflog-for-dwr-calls";
-        String messageId = UUID.randomUUID().toString();
+        String messageId = topicName+"-"+(Instant.now().toEpochMilli() + "-").concat(UUID.randomUUID().toString());
 
         callStack.setId(messageId);
         ListenableFuture<SendResult<String, CallStack>> future = kafkaTemplate.send(topicName,messageId,callStack);
