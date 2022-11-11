@@ -8,6 +8,7 @@ package com.ondemand.tools.perflog.kafka.producer;
 
 
 import com.ondemand.tools.perflog.models.CallStack;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +19,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
-@Component
-public final class Producer {
+import java.util.UUID;
 
-    private static final Logger logger = LoggerFactory.getLogger(Producer.class);
+@Component
+@Slf4j
+public final class Producer {
 
     @Autowired
     private final KafkaTemplate<String, CallStack> kafkaTemplate;
@@ -32,18 +34,25 @@ public final class Producer {
 
     public void sendMessage(CallStack callStack) {
         String topicName = "perflog-for-dwr-calls";
-        ListenableFuture<SendResult<String, CallStack>> future = kafkaTemplate.send(topicName, callStack);
+        String messageId = UUID.randomUUID().toString();
+
+        callStack.setId(messageId);
+        ListenableFuture<SendResult<String, CallStack>> future = kafkaTemplate.send(topicName,messageId,callStack);
 
         //This will check producer result asynchronously to avoid thread blocking
         future.addCallback(new ListenableFutureCallback<SendResult<String, CallStack>>() {
             @Override
             public void onFailure(@NotNull Throwable throwable) {
-                logger.error("Failed to send message", throwable);
+                log.error("Failed to send message", throwable);
             }
 
             @Override
             public void onSuccess(SendResult<String, CallStack> stringStringSendResult) {
-                logger.info("Sent message successfully");
+
+                log.info(String.format("Produced:\ntopic: %s\noffset: %d\npartition: %d\nvalue size: %d", stringStringSendResult.getRecordMetadata().topic(),
+                        stringStringSendResult.getRecordMetadata().offset(),
+                        stringStringSendResult.getRecordMetadata().partition(),
+                        stringStringSendResult.getRecordMetadata().serializedValueSize()));
             }
         });
     }

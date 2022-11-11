@@ -25,8 +25,8 @@ public class KafkaConfig {
     @Value(value = "${kafka.bootstrapAddress}")
     private String bootstrapAddress;
 
-//    @Value(value = "${kafka.jaas}")
-//    private String jaas;
+    @Value(value = "${kafka.jaas}")
+    private String jaas;
 
     @Bean
     public ProducerFactory<String, CallStack> producerFactory() {
@@ -36,9 +36,9 @@ public class KafkaConfig {
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
         //Set these if using SASL authentication or Confluent Cloud
-        properties.put("security.protocol", "SASL_SSL");
+        properties.put("security.protocol", "PLAINTEXT");
         properties.put("sasl.mechanism", "PLAIN");
-//        properties.put("sasl.jaas.config", jaas);
+        properties.put("sasl.jaas.config", jaas);
         properties.put("acks", "all");
         return new DefaultKafkaProducerFactory<>(properties);
     }

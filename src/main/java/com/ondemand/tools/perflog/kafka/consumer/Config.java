@@ -40,7 +40,7 @@ public class Config {
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         //Set these if using SASL authentication or Confluent Cloud
-        properties.put("security.protocol", "SASL_SSL");
+        properties.put("security.protocol", "PLAINTEXT");
         properties.put("sasl.mechanism", "PLAIN");
         properties.put("sasl.jaas.config", jaas);
         return properties;
