@@ -57,9 +57,10 @@ public class CallStackConsumerService {
                         final @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
                         final @Header(KafkaHeaders.RECEIVED_TIMESTAMP) long ts
     ) {
-        log.info(String.format("#### -> Consumed message -> TIMESTAMP: %d\n%s\noffset: %d\nkey: %s\npartition: %d\ntopic: %s",
+        log.info(String.format("\n#### -> Consumed message -> \n TIMESTAMP: %d\n%s\noffset: %d\nkey: %s\npartition: %d\ntopic: %s",
                 ts, splunkPayLoad, offset, key, partition, topic));
         log.info("Persisting message id: {}",splunkPayLoad.getSid());
+        log.info("Raw data is : {} ",splunkPayLoad.getResult().getRaw());
         splunkPayLoadRepository.insert(splunkPayLoad);
     }
 

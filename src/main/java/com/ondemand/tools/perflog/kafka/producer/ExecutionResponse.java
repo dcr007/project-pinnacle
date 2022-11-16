@@ -1,5 +1,7 @@
 package com.ondemand.tools.perflog.kafka.producer;
 
+import lombok.AllArgsConstructor;
+
 /**
  * @author Chandu D - i861116
  * @created 15/11/2022 - 9:50 PM

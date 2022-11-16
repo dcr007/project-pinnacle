@@ -27,4 +27,5 @@ public class SplunkPayLoad implements Serializable {
     @JsonAlias({"results_link"})
     private  String resultsLink ;
     private  SplunkResult result ;
+    private String time;
 }

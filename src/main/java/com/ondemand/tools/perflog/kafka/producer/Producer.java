@@ -66,7 +66,8 @@ public final class Producer {
     public ResponseEntity<ExecutionResponse> sendDwrLogs(SplunkPayLoad splunkPayLoad)
             throws ExecutionException, InterruptedException, TimeoutException {
         String topicName = "topic-dwr-call";
-        String messageId = topicName+"-".concat(splunkPayLoad.getSid())+ "-"+(Instant.now().toEpochMilli());
+        String messageId = topicName+"-".concat(splunkPayLoad.getSid())+
+                "-"+(Instant.now().toEpochMilli());
         ExecutionResponse eresp = new ExecutionResponse();
 
         splunkPayLoad.setSid(messageId);
@@ -89,7 +90,7 @@ public final class Producer {
                 eresp.status = "ok";
                 eresp.msg = "message submitted successfully";
 
-                log.info(String.format("Produced:\ntopic: %s\noffset: %d\npartition: %d\nvalue size: %d", splunkPayLoadSendResult.getRecordMetadata().topic(),
+                log.info(String.format("\nProduced:\ntopic: %s\noffset: %d\npartition: %d\nvalue size: %d", splunkPayLoadSendResult.getRecordMetadata().topic(),
                         splunkPayLoadSendResult.getRecordMetadata().offset(),
                         splunkPayLoadSendResult.getRecordMetadata().partition(),
                         splunkPayLoadSendResult.getRecordMetadata().serializedValueSize()));
