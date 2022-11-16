@@ -5,23 +5,6 @@
 |:-----------|    :---      | :---  |:---------------------------------------------------------------|  
 | 10/20/2022 | V0.1 | Dowlathram, Chanduram <chanduram.dowlathram@sap.com>| 1.Initial draft created. <br> 2.Includes Technical specs.      |
 | 11/05/2022 | V0.12 | Dowlathram, Chanduram <chanduram.dowlathram@sap.com>| 1. Included Functional Requirements on  Data Ingestion Service |
-## Table of Contents
-
-
-  - [Functional Requirements](#business-requirements)
-    - [Tenant usage based on Login data](#tenant-usage-based-on-login-data)
-    - [Analytical Insights from Tenant usage based on Login data ](#analytical-insights-from-tenant-usage-based-on-login-data)
-  - [Technical Specifications](#technical-specifications)
-    - [Flow of Sequence](#flow-of-sequence)
-    - [UseCase to post splunk report scheduled via Webhook](#usecase-to-post-splunk-report-scheduled-via-webhook)
-    - [UseCase to Publish Power-BI Report](#usecase-to-publish-power-bi-report)
-    - [Splunk Alert](#splunk-alert)
-    - [Splunk query used to generate the report](#splunk-query-used-to-generate-the-report)
-  - [Service Layer](#service-layer)
-    - [Api to post splunk data](#api-to-post-splunk-data)
-    - [Service Classes](#service-classes)
-  - [Persistent Layer](#persistent-layer)
-    - [Data Base Container specifications](#data-base-container-specifications)
 
 ## Overview
 This initiative is to build a Observability platform that will focus on error detection and identification for the currently identified areas of 
