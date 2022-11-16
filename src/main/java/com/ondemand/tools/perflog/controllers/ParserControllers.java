@@ -1,9 +1,9 @@
 package com.ondemand.tools.perflog.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.ondemand.tools.perflog.kafka.producer.Producer;
-import com.ondemand.tools.perflog.models.CallStack;
-import com.ondemand.tools.perflog.models.SegregatedStack;
+import com.ondemand.tools.perflog.models.*;
 import com.ondemand.tools.perflog.models.enums.CallCategory;
 import com.ondemand.tools.perflog.services.CallStackService;
 import com.ondemand.tools.perflog.services.FetchPerfLogDataService;
@@ -12,6 +12,7 @@ import com.ondemand.tools.perflog.services.SegregateStackServiceImpl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Chandu D - i861116
@@ -57,7 +60,8 @@ public class ParserControllers {
     }
 
     @PostMapping("/parseCallStack")
-    public ResponseEntity<Map<CallCategory,ArrayList<SegregatedStack>>> parseCallStack(@RequestBody CallStack callStack) throws JsonProcessingException {
+    public ResponseEntity<Map<CallCategory,ArrayList<SegregatedStack>>>
+    parseCallStack(@RequestBody CallStack callStack) throws JsonProcessingException {
 
         log.info("Received call stack :\n{}",callStack);
         Map<CallCategory, ArrayList<SegregatedStack>> callCategoryMap = new HashMap<>();
@@ -69,10 +73,32 @@ public class ParserControllers {
         return callStackService.save(callStack);
 
     }
-    @PostMapping("/sendCallStackToQueue")
+    @PostMapping("/sendToCallStackQueue")
     public String sendCallStackToQueue(@RequestBody CallStack callStack){
         producer.sendMessage(callStack);
         return "Message published sucessfully";
     }
 
+    @PostMapping("/sendToDwrQueue")
+    public HttpStatus sendCallStackToQueue(@RequestBody SplunkPayLoad dwrStack)
+            throws ExecutionException, InterruptedException, TimeoutException {
+        return producer.sendDwrLogs(dwrStack).getStatusCode();
+       // return "Message published sucessfully";
+    }
+
+
+    @PostMapping("/postRawCallStack")
+    public HttpStatus postRawCallStack(@RequestBody JsonNode callStack) {
+
+        HttpStatus status =
+                callStackService.save(callStack);
+       return status;
+    }
+    @PostMapping(value = "/postSplunkPayLoad")
+    public HttpStatus postSplunkPayLoad(@RequestBody SplunkPayLoad splunkPayLoad) {
+
+        HttpStatus status =
+                callStackService.save(splunkPayLoad);
+        return status;
+    }
 }

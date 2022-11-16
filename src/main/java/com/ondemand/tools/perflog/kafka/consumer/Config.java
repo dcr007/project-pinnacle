@@ -5,6 +5,7 @@ package com.ondemand.tools.perflog.kafka.consumer;
  * @created 07/11/2022 - 2:43 PM
  * @description
  */
+import com.ondemand.tools.perflog.models.SplunkPayLoad;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import com.ondemand.tools.perflog.models.CallStack;
@@ -52,10 +53,26 @@ public class Config {
     }
 
     @Bean
+    public ConsumerFactory<String, SplunkPayLoad> splunkPayLoadConsumerFactory() {
+        return new DefaultKafkaConsumerFactory<>( consumerConfig(), new StringDeserializer()
+                , new JsonDeserializer(SplunkPayLoad.class));
+    }
+
+    @Bean
     public ConcurrentKafkaListenerContainerFactory<String, CallStack> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, CallStack> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
+        factory.setConcurrency(3);
+        return factory;
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, SplunkPayLoad>
+    kafkaSplunkPayLoadListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, SplunkPayLoad> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(splunkPayLoadConsumerFactory());
         factory.setConcurrency(3);
         return factory;
     }

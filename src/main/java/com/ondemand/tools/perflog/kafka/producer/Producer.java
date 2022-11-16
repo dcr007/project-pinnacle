@@ -8,11 +8,13 @@ package com.ondemand.tools.perflog.kafka.producer;
 
 
 import com.ondemand.tools.perflog.models.CallStack;
+import com.ondemand.tools.perflog.models.SplunkPayLoad;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
@@ -21,20 +23,23 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Component
 @Slf4j
+@AllArgsConstructor
 public final class Producer {
 
     @Autowired
     private final KafkaTemplate<String, CallStack> kafkaTemplate;
 
-    public Producer(KafkaTemplate<String, CallStack> kafkaTemplate) {
-        this.kafkaTemplate = kafkaTemplate;
-    }
+    @Autowired
+    private final KafkaTemplate<String, SplunkPayLoad> splunkPayLoadKafkaTemplate;
 
     public void sendMessage(CallStack callStack) {
-        String topicName = "perflog-for-dwr-calls";
+        String topicName = "topic-callStack-call";
         String messageId = topicName+"-"+(Instant.now().toEpochMilli() + "-").concat(UUID.randomUUID().toString());
 
         callStack.setId(messageId);
@@ -48,13 +53,50 @@ public final class Producer {
             }
 
             @Override
-            public void onSuccess(SendResult<String, CallStack> stringStringSendResult) {
+            public void onSuccess(SendResult<String, CallStack> callStackSendResult) {
 
-                log.info(String.format("Produced:\ntopic: %s\noffset: %d\npartition: %d\nvalue size: %d", stringStringSendResult.getRecordMetadata().topic(),
-                        stringStringSendResult.getRecordMetadata().offset(),
-                        stringStringSendResult.getRecordMetadata().partition(),
-                        stringStringSendResult.getRecordMetadata().serializedValueSize()));
+                log.info(String.format("Produced:\ntopic: %s\noffset: %d\npartition: %d\nvalue size: %d", callStackSendResult.getRecordMetadata().topic(),
+                        callStackSendResult.getRecordMetadata().offset(),
+                        callStackSendResult.getRecordMetadata().partition(),
+                        callStackSendResult.getRecordMetadata().serializedValueSize()));
             }
         });
+    }
+
+    public ResponseEntity<ExecutionResponse> sendDwrLogs(SplunkPayLoad splunkPayLoad)
+            throws ExecutionException, InterruptedException, TimeoutException {
+        String topicName = "topic-dwr-call";
+        String messageId = topicName+"-".concat(splunkPayLoad.getSid())+ "-"+(Instant.now().toEpochMilli());
+        ExecutionResponse eresp = new ExecutionResponse();
+
+        splunkPayLoad.setSid(messageId);
+        ListenableFuture<SendResult<String, SplunkPayLoad>> future =
+                 splunkPayLoadKafkaTemplate
+                        .send(topicName,messageId,splunkPayLoad);
+
+        future.get(1L,TimeUnit.SECONDS);
+
+        future.addCallback(new ListenableFutureCallback<SendResult<String, SplunkPayLoad>>() {
+            @Override
+            public void onFailure(@NotNull Throwable throwable) {
+                eresp.status = "error";
+                eresp.msg = "failure while sending data to kafka. exception: " + throwable.getMessage();
+                log.error(eresp.msg);
+            }
+
+            @Override
+            public void onSuccess(SendResult<String, SplunkPayLoad> splunkPayLoadSendResult) {
+                eresp.status = "ok";
+                eresp.msg = "message submitted successfully";
+
+                log.info(String.format("Produced:\ntopic: %s\noffset: %d\npartition: %d\nvalue size: %d", splunkPayLoadSendResult.getRecordMetadata().topic(),
+                        splunkPayLoadSendResult.getRecordMetadata().offset(),
+                        splunkPayLoadSendResult.getRecordMetadata().partition(),
+                        splunkPayLoadSendResult.getRecordMetadata().serializedValueSize()));
+            }
+
+        });
+        HttpStatus erespStatus = eresp.status == "ok" ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<ExecutionResponse>(eresp, erespStatus);
     }
 }

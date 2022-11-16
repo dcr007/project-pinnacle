@@ -1,5 +1,6 @@
 package com.ondemand.tools.perflog.models;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,21 +17,14 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SqlStack implements Serializable {
+public class SplunkResult implements Serializable {
 
-    private static final long serialVersionUID = -1698163054778439285L;
+    private static final long serialVersionUID = -1698863054778439285L;
 
-    private String sqlStmt;
-    private  long i;
-    private long t;
-    private long slft;
-    private long q;
-    private long qq;
-    private long u;
-    private long uu;
-    private long m;
-    private long nr;
-    private long rt;
-    private long rn;
-    private long fs;
+    @JsonAlias({"SFDC"})
+    private String dc;
+    @JsonAlias({"URL"})
+    private String url;
+    @JsonAlias({"_raw"})
+    private String raw;
 }

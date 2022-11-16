@@ -5,6 +5,7 @@ package com.ondemand.tools.perflog.kafka.producer;
  * @created 07/11/2022 - 10:14 AM
  * @description
  */
+import com.ondemand.tools.perflog.models.SplunkPayLoad;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import com.ondemand.tools.perflog.models.CallStack;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -46,5 +47,25 @@ public class KafkaConfig {
     @Bean
     public KafkaTemplate<String, CallStack> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
+    }
+
+    @Bean
+    public ProducerFactory<String, SplunkPayLoad> splunkPayLoadProducerFactory() {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+
+        //Set these if using SASL authentication or Confluent Cloud
+        properties.put("security.protocol", "PLAINTEXT");
+        properties.put("sasl.mechanism", "PLAIN");
+        properties.put("sasl.jaas.config", jaas);
+        properties.put("acks", "all");
+        return new DefaultKafkaProducerFactory<>(properties);
+    }
+
+    @Bean
+    public KafkaTemplate<String, SplunkPayLoad> splunkPayLoadKafkaTemplate() {
+        return new KafkaTemplate<>(splunkPayLoadProducerFactory());
     }
 }
