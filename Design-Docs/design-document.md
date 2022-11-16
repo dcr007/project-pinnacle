@@ -1,5 +1,16 @@
 # Detailed Design Document
 
+<!-- TOC -->
+* [Detailed Design Document](#detailed-design-document)
+  * [Overview](#overview)
+    * [Known Problem Areas](#known-problem-areas)
+    * [Identified Use-Cases](#identified-use-cases)
+  * [Functional Requirements](#functional-requirements)
+    * [Data Ingestion Service](#data-ingestion-service)
+    * [Data Validation Service](#data-validation-service)
+    * [Rule definition Engine](#rule-definition-engine)
+    * [Anomaly Detection Engine](#anomaly-detection-engine)
+<!-- TOC -->
 
 | ***Date*** | ***Version*** |  ***Authors***    | ***Comments***                                                 |
 |:-----------|    :---      | :---  |:---------------------------------------------------------------|  
