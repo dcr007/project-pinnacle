@@ -2,12 +2,13 @@ package com.ondemand.tools.perflog.models;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.ondemand.tools.perflog.convertors.PerfLogConvertor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-
+import javax.persistence.Convert;
 /**
  * @author Chandu D - i861116
  * @created 13/10/2022 - 11:17 AM
@@ -27,4 +28,6 @@ public class SplunkResult implements Serializable {
     private String url;
     @JsonAlias({"_raw"})
     private String raw;
+    @Convert(converter = PerfLogConvertor.class)
+    private PerfLog perfLog;
 }

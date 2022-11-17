@@ -21,11 +21,12 @@ import java.io.Serializable;
 @Document(collection = "SplunkPayLoad")
 public class SplunkPayLoad implements Serializable {
 
-    private static final long serialVersionUID = -1638163054776439285L;
+    private static final long serialVersionUID = -1238163054776439285L;
     @Id
     private String sid;
     @JsonAlias({"results_link"})
     private  String resultsLink ;
     private  SplunkResult result ;
     private String time;
+
 }

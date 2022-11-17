@@ -21,6 +21,8 @@ import java.io.Serializable;
 @Setter
 @Document(collection = "AnyJsonPayLoad")
 public class JsonPayLoad implements Serializable {
+    private static final long serialVersionUID = -7238163054776439285L;
+
     JsonNode payload;
 
     @Id
