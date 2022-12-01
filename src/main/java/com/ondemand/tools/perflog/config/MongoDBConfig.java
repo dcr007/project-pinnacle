@@ -32,10 +32,10 @@ public class MongoDBConfig extends AbstractMongoClientConfiguration {
     @Override
     public @Bean MongoClient mongoClient() {
 
-//        String CONNECTION_STRING =
-//                "mongodb%3A//admin%3Apassword%40localhost:27017/perflogglobaldb?authSource=admin&retryWrites=true&w=majority\n";
+        final String CONNECTION_STRING =
+                "mongodb://admin:password@localhost:27017/perflogglobaldb?authSource=admin";
 
-        final ConnectionString connectionString = new ConnectionString("mongodb://admin:password@localhost:27017/perflogglobaldb?authSource=admin");
+        final ConnectionString connectionString = new ConnectionString(CONNECTION_STRING);
         final MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build();
@@ -50,10 +50,8 @@ public class MongoDBConfig extends AbstractMongoClientConfiguration {
     @Override
     public @NotNull MongoCustomConversions customConversions(){
         converters.add(new StringToPerfLogConvertor());
-        converters.add(new SplunkPayLoadConvertor());
-        log.info("Size of convertors: {}", converters.size());
+//        converters.add(new SplunkPayLoadConvertor());
+        log.debug("Size of convertors: {}", converters.size());
         return  new MongoCustomConversions(converters);
     }
-
-
 }

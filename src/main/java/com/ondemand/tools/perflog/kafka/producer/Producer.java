@@ -7,10 +7,9 @@ package com.ondemand.tools.perflog.kafka.producer;
  */
 
 
-import com.ondemand.tools.perflog.models.CallStack;
-import com.ondemand.tools.perflog.models.PerfLog;
-import com.ondemand.tools.perflog.models.SplunkPayLoad;
-import com.ondemand.tools.perflog.models.SplunkResult;
+import com.ondemand.tools.perflog.kafka.models.CallStack;
+import com.ondemand.tools.perflog.kafka.models.SplunkPayLoad;
+import com.ondemand.tools.perflog.kafka.models.SplunkResult;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -23,13 +22,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.springframework.core.convert.ConversionService;
+
 @Component
 @Slf4j
 @AllArgsConstructor
@@ -80,18 +78,6 @@ public final class Producer {
         splunkPayLoad.setSid(messageId);
 
         SplunkResult result = splunkPayLoad.getResult();
-
-//                Trigger the converter here :
-//        result.setPerfLog(conversionService.convert(result.getRaw(), PerfLog.class));
-
-//        log.info("===============================");
-//        log.info("Converting PerfLog is \n{}",splunkPayLoad.getResult().getPerfLog());
-//        log.info("===============================");
-       /* try{
-            splunkPayLoad.getResult().deserializePerfLog();
-        }catch(IOException e){
-            log.error("Could no deserialize PerfLog \t {}",e.getMessage());
-        }*/
 
         ListenableFuture<SendResult<String, SplunkPayLoad>> future =
                  splunkPayLoadKafkaTemplate

@@ -1,6 +1,6 @@
 package com.ondemand.tools.perflog.repository;
 
-import com.ondemand.tools.perflog.models.CallStack;
+import com.ondemand.tools.perflog.kafka.models.CallStack;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

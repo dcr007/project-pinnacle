@@ -5,9 +5,9 @@ package com.ondemand.tools.perflog.kafka.producer;
  * @created 07/11/2022 - 10:14 AM
  * @description
  */
-import com.ondemand.tools.perflog.models.SplunkPayLoad;
+import com.ondemand.tools.perflog.kafka.models.SplunkPayLoad;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import com.ondemand.tools.perflog.models.CallStack;
+import com.ondemand.tools.perflog.kafka.models.CallStack;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;

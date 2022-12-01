@@ -1,16 +1,14 @@
 package com.ondemand.tools.perflog.convertors;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.ondemand.tools.perflog.models.CallStack;
-import com.ondemand.tools.perflog.models.PerfLog;
+import com.ondemand.tools.perflog.kafka.models.CallStack;
+import com.ondemand.tools.perflog.kafka.models.PerfLog;
+import com.ondemand.tools.perflog.services.NextSequenceService;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 
 import org.springframework.stereotype.Component;
@@ -28,6 +26,8 @@ import java.util.regex.Pattern;
 @Component
 public class StringToPerfLogConvertor implements Converter<String,PerfLog> {
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private NextSequenceService nextSequenceIdGeneratorService;
 
     static PerfLog perfLogObj;
     static CallStack callStack;
@@ -53,6 +53,7 @@ public class StringToPerfLogConvertor implements Converter<String,PerfLog> {
                 .stream()
                 .filter(Objects::nonNull)
                 .map(perfMap -> PerfLog.builder()
+                        .perfLogId(String.valueOf(nextSequenceIdGeneratorService.getNextSequence("perfLogId-")))
                         .timeStamp(perfLogMap.getOrDefault("timeStamp","no entry found: timeStamp"))
                         .dc(perfLogMap.getOrDefault("dc","no entry found: dc"))
                         .plv(perfLogMap.getOrDefault("plv","no entry found: plv"))

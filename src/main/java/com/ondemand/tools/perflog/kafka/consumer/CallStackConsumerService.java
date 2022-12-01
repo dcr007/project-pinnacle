@@ -1,11 +1,9 @@
 package com.ondemand.tools.perflog.kafka.consumer;
 
-import com.ondemand.tools.perflog.models.CallStack;
-import com.ondemand.tools.perflog.models.PerfLog;
-import com.ondemand.tools.perflog.models.SplunkPayLoad;
-import com.ondemand.tools.perflog.models.SplunkResult;
+import com.ondemand.tools.perflog.kafka.models.*;
 import com.ondemand.tools.perflog.repository.CallStackRepository;
 import com.ondemand.tools.perflog.repository.SplunkPayLoadRepository;
+import com.ondemand.tools.perflog.services.NextSequenceService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +31,8 @@ public class CallStackConsumerService {
     private CallStackRepository callStackRepository ;
     @Autowired
     ConversionService conversionService;
+    @Autowired
+    NextSequenceService nextSequenceIdGeneratorService;
 
     @Autowired
     private SplunkPayLoadRepository splunkPayLoadRepository;
@@ -62,9 +62,14 @@ public class CallStackConsumerService {
     ) {
         log.info(String.format("\n#### -> Consumed message -> \n TIMESTAMP: %d\n%s\noffset: %d\nkey: %s\npartition: %d\ntopic: %s",
                 ts, splunkPayLoad, offset, key, partition, topic));
+        splunkPayLoad.setPayLoadId(String.valueOf(nextSequenceIdGeneratorService.getNextSequence("payLoadId-topic:"+topic+"-")));
+        splunkPayLoad.setTime(String.valueOf(ts));
+
         SplunkResult result = splunkPayLoad.getResult();
+        result.setResultId(String.valueOf(nextSequenceIdGeneratorService.getNextSequence("resultId-topic:"+topic+"-")));
         List<PerfLog> perfLogList = new ArrayList<>();
         PerfLog rawData;
+
 //                Trigger the converter here :
         if(result.getRaw()!=null){
             rawData= conversionService.convert(result.getRaw(), PerfLog.class);

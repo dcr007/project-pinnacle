@@ -1,4 +1,4 @@
-package com.ondemand.tools.perflog.models;
+package com.ondemand.tools.perflog.kafka.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
@@ -6,7 +6,6 @@ import lombok.extern.jackson.Jacksonized;
 import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;
-import java.util.Map;
 
 /**
  * @author Chandu D - i861116
@@ -20,6 +19,8 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PerfLog implements Serializable {
     private static final long serialVersionUID = -5238163054776439285L;
+    @Id
+    String perfLogId;
     String timeStamp;
     String dc;
     String plv;
@@ -63,5 +64,4 @@ public class PerfLog implements Serializable {
     String cext;
     String crem;
     CallStack stk;
-//    Map<String,Object> stk;
 }

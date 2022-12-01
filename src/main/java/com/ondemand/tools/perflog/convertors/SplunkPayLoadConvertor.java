@@ -2,17 +2,15 @@ package com.ondemand.tools.perflog.convertors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ondemand.tools.perflog.kafka.producer.ExecutionResponse;
-import com.ondemand.tools.perflog.models.CallStack;
-import com.ondemand.tools.perflog.models.PerfLog;
-import com.ondemand.tools.perflog.models.SplunkPayLoad;
-import com.ondemand.tools.perflog.models.SplunkResult;
+import com.ondemand.tools.perflog.kafka.models.CallStack;
+import com.ondemand.tools.perflog.kafka.models.PerfLog;
+import com.ondemand.tools.perflog.kafka.models.SplunkPayLoad;
+import com.ondemand.tools.perflog.kafka.models.SplunkResult;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.data.convert.ReadingConverter;
-import org.springframework.data.convert.WritingConverter;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -39,12 +37,6 @@ public class SplunkPayLoadConvertor implements Converter<SplunkPayLoad, SplunkPa
         ExecutionResponse eresp = new ExecutionResponse();
         splunkPayLoad.setSid(messageId);
         SplunkResult result = splunkPayLoad.getResult();
-
-//        log.info("===============================");
-//        log.info("Value of _raw is \n{}",result.getRaw());
-//        log.info("===============================");
-//        //        Trigger the converter here :
-//        result.setPerfLog(conversionService.convert(result.getRaw(), PerfLog.class));
 
         return splunkPayLoad;
     }

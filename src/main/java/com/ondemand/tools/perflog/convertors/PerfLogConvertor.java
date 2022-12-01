@@ -1,28 +1,21 @@
 package com.ondemand.tools.perflog.convertors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ondemand.tools.perflog.models.CallStack;
-import com.ondemand.tools.perflog.models.PerfLog;
+import com.ondemand.tools.perflog.kafka.models.PerfLog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Chandu D - i861116
  * @created 17/11/2022 - 11:40 AM
  * @description
  */
+@Deprecated
 @Slf4j
 @Component
 @Converter(autoApply = true)

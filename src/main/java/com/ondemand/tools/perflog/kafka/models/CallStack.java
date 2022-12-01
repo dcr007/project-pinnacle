@@ -1,4 +1,4 @@
-package com.ondemand.tools.perflog.models;
+package com.ondemand.tools.perflog.kafka.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Chandu D - i861116

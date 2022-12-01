@@ -2,14 +2,12 @@ package com.ondemand.tools.perflog.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ondemand.tools.perflog.models.CallStack;
+import com.ondemand.tools.perflog.kafka.models.CallStack;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import lombok.extern.slf4j.XSlf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.Stack;
 
 /**
  * @author Chandu D - i861116

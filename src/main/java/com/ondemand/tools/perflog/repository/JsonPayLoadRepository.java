@@ -1,7 +1,6 @@
 package com.ondemand.tools.perflog.repository;
 
-import com.mongodb.client.MongoDatabase;
-import com.ondemand.tools.perflog.models.JsonPayLoad;
+import com.ondemand.tools.perflog.kafka.models.JsonPayLoad;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**

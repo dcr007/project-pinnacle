@@ -1,7 +1,7 @@
-package com.ondemand.tools.perflog.models;
+package com.ondemand.tools.perflog.kafka.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.ondemand.tools.perflog.models.enums.CallCategory;
+import com.ondemand.tools.perflog.kafka.models.enums.CallCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

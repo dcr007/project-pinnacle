@@ -1,4 +1,4 @@
-package com.ondemand.tools.perflog.models.enums;
+package com.ondemand.tools.perflog.kafka.models.enums;
 
 /**
  * @author Chandu D - i861116

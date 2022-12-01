@@ -1,6 +1,6 @@
 package com.ondemand.tools.perflog.repository;
 
-import com.ondemand.tools.perflog.models.RawData;
+import com.ondemand.tools.perflog.kafka.models.RawData;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**

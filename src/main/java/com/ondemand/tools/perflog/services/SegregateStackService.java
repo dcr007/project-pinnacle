@@ -1,8 +1,8 @@
 package com.ondemand.tools.perflog.services;
 
-import com.ondemand.tools.perflog.models.CallStack;
-import com.ondemand.tools.perflog.models.SegregatedStack;
-import com.ondemand.tools.perflog.models.enums.CallCategory;
+import com.ondemand.tools.perflog.kafka.models.CallStack;
+import com.ondemand.tools.perflog.kafka.models.SegregatedStack;
+import com.ondemand.tools.perflog.kafka.models.enums.CallCategory;
 
 import java.util.ArrayList;
 import java.util.Map;

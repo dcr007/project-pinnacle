@@ -1,4 +1,4 @@
-package com.ondemand.tools.perflog.models;
+package com.ondemand.tools.perflog.kafka.models;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
