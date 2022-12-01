@@ -1,17 +1,18 @@
 package com.ondemand.tools.perflog.convertors;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.ondemand.tools.perflog.models.CallStack;
 import com.ondemand.tools.perflog.models.PerfLog;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.convert.converter.Converter;
 
-import org.springframework.data.convert.WritingConverter;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -35,17 +36,19 @@ public class StringToPerfLogConvertor implements Converter<String,PerfLog> {
     public PerfLog convert(@NotNull String pLog) {
         Map<String,String> perfLogMap = logToMapConvertor(pLog);
         log.info("Converting Log  :{} ",pLog);
-        objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER,true);
-        objectMapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, true);
+//        objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER,true);
 
+        String stackStr="";
         if (perfLogMap.containsKey("stk")) {
             try {
-                String stackStr = perfLogMap.get("stk");
+                stackStr = perfLogMap.get("stk");
+                //removes any extra brackets in the json string
+                stackStr = stackStr.replace("\"\"", "\"").trim();
                 callStack = objectMapper.readValue(stackStr,new TypeReference<CallStack>(){});
 
-            } catch (JsonProcessingException e) {
-                log.error("Error occurred while processing CallStack json,exception details : \n {}", e.getMessage());
-                throw new RuntimeException(e);
+            } catch (JsonProcessingException ex) {
+                log.error("Error occurred while processing CallStack json,exception details : \n {}"
+                            , ex.getMessage());
             }
         }
         perfLogObj = perfLogMap.entrySet()
