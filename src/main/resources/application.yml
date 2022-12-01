@@ -32,9 +32,9 @@ spring:
       host: localhost
   application:
     name: perflog-parser
-  jackson:
-    serialization:
-      FAIL_ON_EMPTY_BEANS: false
+#  jackson:
+#    serialization:
+#      FAIL_ON_EMPTY_BEANS: false
   jpa:
     open-in-view: false
 ### Kafka ################################################################

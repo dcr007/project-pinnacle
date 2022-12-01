@@ -1,17 +1,23 @@
 package com.ondemand.tools.perflog.kafka.consumer;
 
 import com.ondemand.tools.perflog.models.CallStack;
+import com.ondemand.tools.perflog.models.PerfLog;
 import com.ondemand.tools.perflog.models.SplunkPayLoad;
+import com.ondemand.tools.perflog.models.SplunkResult;
 import com.ondemand.tools.perflog.repository.CallStackRepository;
 import com.ondemand.tools.perflog.repository.SplunkPayLoadRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Chandu D - i861116
@@ -25,16 +31,12 @@ public class CallStackConsumerService {
 
     @Autowired
     private CallStackRepository callStackRepository ;
+    @Autowired
+    ConversionService conversionService;
 
     @Autowired
     private SplunkPayLoadRepository splunkPayLoadRepository;
 
-
-    /*  @KafkaListener(topics = "perflog-for-dwr-calls", containerFactory = "kafkaListenerContainerFactory")
-    public void consume(CallStack stack) {
-        callStackRepository.insert(stack);
-        log.info("Consumed message :{}",stack.getN());
-    }*/
     @KafkaListener(topics = "topic-callStack-call", containerFactory = "kafkaListenerContainerFactory")
     public void consume(final @Payload CallStack callStack,
                         final @Header(KafkaHeaders.OFFSET) Integer offset,
@@ -45,7 +47,8 @@ public class CallStackConsumerService {
     ) {
         log.info(String.format("#### -> Consumed message -> TIMESTAMP: %d\n%s\noffset: %d\nkey: %s\npartition: %d\ntopic: %s",
                 ts, callStack, offset, key, partition, topic));
-        log.info("Persisting message id: {}",callStack.getId());
+
+        log.info("Persisting message : {}",callStack);
         callStackRepository.insert(callStack);
     }
 
@@ -59,8 +62,28 @@ public class CallStackConsumerService {
     ) {
         log.info(String.format("\n#### -> Consumed message -> \n TIMESTAMP: %d\n%s\noffset: %d\nkey: %s\npartition: %d\ntopic: %s",
                 ts, splunkPayLoad, offset, key, partition, topic));
+        SplunkResult result = splunkPayLoad.getResult();
+        List<PerfLog> perfLogList = new ArrayList<>();
+        PerfLog rawData;
+//                Trigger the converter here :
+        if(result.getRaw()!=null){
+            rawData= conversionService.convert(result.getRaw(), PerfLog.class);
+            perfLogList.add(rawData);
+            result.setPerfLog(perfLogList);
+        }
+        if(result.get_raw()!=null){
+            rawData= conversionService.convert(result.get_raw(), PerfLog.class);
+            perfLogList.add(rawData);
+            result.setPerfLog(perfLogList);
+        }
+
+        log.info("===============================");
+        log.info("Converting PerfLog  \n{}",splunkPayLoad.getResult().getPerfLog());
+        log.info("===============================");
+
         log.info("Persisting message id: {}",splunkPayLoad.getSid());
-        log.info("Raw data is : {} ",splunkPayLoad.getResult().getRaw());
+
+//        log.info("Raw data is : {} ",splunkPayLoad.getResult().getPerfLog());
         splunkPayLoadRepository.insert(splunkPayLoad);
     }
 

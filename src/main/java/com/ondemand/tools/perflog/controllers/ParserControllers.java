@@ -12,6 +12,7 @@ import com.ondemand.tools.perflog.services.SegregateStackServiceImpl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -71,7 +72,6 @@ public class ParserControllers {
     @PostMapping("/saveCallStack")
     public String saveCallStack(@RequestBody CallStack callStack){
         return callStackService.save(callStack);
-
     }
     @PostMapping("/sendToCallStackQueue")
     public String sendCallStackToQueue(@RequestBody CallStack callStack){
@@ -82,6 +82,7 @@ public class ParserControllers {
     @PostMapping("/sendToDwrQueue")
     public HttpStatus sendCallStackToQueue(@RequestBody SplunkPayLoad dwrStack)
             throws ExecutionException, InterruptedException, TimeoutException {
+
         return producer.sendDwrLogs(dwrStack).getStatusCode();
        // return "Message published sucessfully";
     }

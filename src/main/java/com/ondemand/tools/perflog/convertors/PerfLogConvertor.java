@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ondemand.tools.perflog.models.CallStack;
 import com.ondemand.tools.perflog.models.PerfLog;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -23,6 +24,7 @@ import java.util.stream.Stream;
  * @description
  */
 @Slf4j
+@Component
 @Converter(autoApply = true)
 public class PerfLogConvertor implements AttributeConverter<PerfLog,String> {
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -42,16 +44,17 @@ public class PerfLogConvertor implements AttributeConverter<PerfLog,String> {
     @Override
     public PerfLog convertToEntityAttribute(String pLog) {
 
-        if(pLog!=null) return perfLogConvertor(pLog).get();
+        if(pLog!=null) return null;
+//        if(pLog!=null) return perfLogConvertor(pLog).get();
        else {
            log.error("Cannot convert PerfLog String to Entity ");
            return (PerfLog) Optional.empty().get();
        }
     }
 
-    public static Optional<PerfLog> perfLogConvertor(String str){
+   /* public static Optional<PerfLog> perfLogConvertor(String str){
         // The string to be searched on
-        String actualString = str;
+        String actualString = str.substring(str.indexOf("PLV"));
 
         //Regular expression to be applied on the actualString
         final String REGEX = "\\s(?=(([^\"]*\"){2})*[^\"]*$)\\s*";
@@ -67,8 +70,8 @@ public class PerfLogConvertor implements AttributeConverter<PerfLog,String> {
         PerfLog perfLog = new PerfLog();
 
         List<String> logList = strSplitStream.collect(Collectors.toList());
-        String timeStamp = logList.get(0).concat(" "+logList.get(1));
-        perfLog.setTimeStamp(timeStamp);
+//        String timeStamp = logList.get(0).concat(" "+logList.get(1));
+//        perfLog.setTimeStamp(timeStamp);
         logList.forEach(
                 s -> {
                     if (s.contains("PLV")) perfLog.setPlv(afterEquals(s));
@@ -127,8 +130,10 @@ public class PerfLogConvertor implements AttributeConverter<PerfLog,String> {
         log.info(perfLog.toString());
 
         return Optional.of(perfLog);
-    }
+    }*/
     private static  String afterEquals(String input) {
         return input.substring(input.indexOf('=') + 1);
     }
+
+
 }

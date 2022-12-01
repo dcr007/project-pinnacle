@@ -1,14 +1,16 @@
 package com.ondemand.tools.perflog.kafka.producer;
 
-/**
- * @author Chandu D - i861116
+/*
+  @author Chandu D - i861116
  * @created 07/11/2022 - 10:39 AM
  * @description
  */
 
 
 import com.ondemand.tools.perflog.models.CallStack;
+import com.ondemand.tools.perflog.models.PerfLog;
 import com.ondemand.tools.perflog.models.SplunkPayLoad;
+import com.ondemand.tools.perflog.models.SplunkResult;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -21,12 +23,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
+import org.springframework.core.convert.ConversionService;
 @Component
 @Slf4j
 @AllArgsConstructor
@@ -34,6 +37,8 @@ public final class Producer {
 
     @Autowired
     private final KafkaTemplate<String, CallStack> kafkaTemplate;
+//    @Autowired
+//    ConversionService conversionService;
 
     @Autowired
     private final KafkaTemplate<String, SplunkPayLoad> splunkPayLoadKafkaTemplate;
@@ -42,8 +47,10 @@ public final class Producer {
         String topicName = "topic-callStack-call";
         String messageId = topicName+"-"+(Instant.now().toEpochMilli() + "-").concat(UUID.randomUUID().toString());
 
-        callStack.setId(messageId);
+//        callStack.setId(messageId);
         ListenableFuture<SendResult<String, CallStack>> future = kafkaTemplate.send(topicName,messageId,callStack);
+
+
 
         //This will check producer result asynchronously to avoid thread blocking
         future.addCallback(new ListenableFutureCallback<SendResult<String, CallStack>>() {
@@ -68,9 +75,24 @@ public final class Producer {
         String topicName = "topic-dwr-call";
         String messageId = topicName+"-".concat(splunkPayLoad.getSid())+
                 "-"+(Instant.now().toEpochMilli());
-        ExecutionResponse eresp = new ExecutionResponse();
+        ExecutionResponse resp = new ExecutionResponse();
 
         splunkPayLoad.setSid(messageId);
+
+        SplunkResult result = splunkPayLoad.getResult();
+
+//                Trigger the converter here :
+//        result.setPerfLog(conversionService.convert(result.getRaw(), PerfLog.class));
+
+//        log.info("===============================");
+//        log.info("Converting PerfLog is \n{}",splunkPayLoad.getResult().getPerfLog());
+//        log.info("===============================");
+       /* try{
+            splunkPayLoad.getResult().deserializePerfLog();
+        }catch(IOException e){
+            log.error("Could no deserialize PerfLog \t {}",e.getMessage());
+        }*/
+
         ListenableFuture<SendResult<String, SplunkPayLoad>> future =
                  splunkPayLoadKafkaTemplate
                         .send(topicName,messageId,splunkPayLoad);
@@ -80,15 +102,15 @@ public final class Producer {
         future.addCallback(new ListenableFutureCallback<SendResult<String, SplunkPayLoad>>() {
             @Override
             public void onFailure(@NotNull Throwable throwable) {
-                eresp.status = "error";
-                eresp.msg = "failure while sending data to kafka. exception: " + throwable.getMessage();
-                log.error(eresp.msg);
+                resp.status = "error";
+                resp.msg = "failure while sending data to kafka. exception: " + throwable.getMessage();
+                log.error(resp.msg);
             }
 
             @Override
             public void onSuccess(SendResult<String, SplunkPayLoad> splunkPayLoadSendResult) {
-                eresp.status = "ok";
-                eresp.msg = "message submitted successfully";
+                resp.status = "ok";
+                resp.msg = "message submitted successfully";
 
                 log.info(String.format("\nProduced:\ntopic: %s\noffset: %d\npartition: %d\nvalue size: %d", splunkPayLoadSendResult.getRecordMetadata().topic(),
                         splunkPayLoadSendResult.getRecordMetadata().offset(),
@@ -97,7 +119,7 @@ public final class Producer {
             }
 
         });
-        HttpStatus erespStatus = eresp.status == "ok" ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST;
-        return new ResponseEntity<ExecutionResponse>(eresp, erespStatus);
+        HttpStatus erespStatus = resp.status == "ok" ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<ExecutionResponse>(resp, erespStatus);
     }
 }
