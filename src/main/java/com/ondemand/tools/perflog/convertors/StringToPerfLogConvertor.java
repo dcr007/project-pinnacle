@@ -36,8 +36,6 @@ public class StringToPerfLogConvertor implements Converter<String,PerfLog> {
     public PerfLog convert(@NotNull String pLog) {
         Map<String,String> perfLogMap = logToMapConvertor(pLog);
         log.info("Converting Log  :{} ",pLog);
-//        objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER,true);
-
         String stackStr="";
         if (perfLogMap.containsKey("stk")) {
             try {
