@@ -46,7 +46,8 @@ public final class Producer {
         String messageId = topicName+"-"+(Instant.now().toEpochMilli() + "-").concat(UUID.randomUUID().toString());
 
 //        callStack.setId(messageId);
-        ListenableFuture<SendResult<String, CallStack>> future = kafkaTemplate.send(topicName,messageId,callStack);
+        ListenableFuture<SendResult<String, CallStack>> future = (ListenableFuture<SendResult<String, CallStack>>)
+                                        kafkaTemplate.send(topicName,messageId,callStack);
 
 
 
@@ -80,8 +81,8 @@ public final class Producer {
         SplunkResult result = splunkPayLoad.getResult();
 
         ListenableFuture<SendResult<String, SplunkPayLoad>> future =
-                 splunkPayLoadKafkaTemplate
-                        .send(topicName,messageId,splunkPayLoad);
+                (ListenableFuture<SendResult<String, SplunkPayLoad>>) splunkPayLoadKafkaTemplate
+                       .send(topicName,messageId,splunkPayLoad);
 
         future.get(1L,TimeUnit.SECONDS);
 

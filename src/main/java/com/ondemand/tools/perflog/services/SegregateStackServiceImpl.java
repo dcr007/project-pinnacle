@@ -63,7 +63,8 @@ public class SegregateStackServiceImpl implements SegregateStackService {
                 segregatedStackList = (classStackMap.get(CallCategory.SERVICE));
                 segregatedStackList.add(segregatedServiceStack);
             } else
-                segregatedStackList = List.of(segregatedServiceStack).stream().collect(Collectors.toCollection(ArrayList::new));
+                segregatedStackList = List.of(segregatedServiceStack)
+                        .stream().collect(Collectors.toCollection(ArrayList::new));
 
             classStackMap.put(segregatedServiceStack.getCallCategory(), (ArrayList<SegregatedStack>) segregatedStackList);
         }
