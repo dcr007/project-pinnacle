@@ -8,11 +8,11 @@
 		<version>2.7.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.ondemand.tools</groupId>
-	<artifactId>perflog-parser</artifactId>
+	<groupId>com.ondemand.pinnacle</groupId>
+	<artifactId>pinnacle-data-ingestion-svc</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>perflog-parser</name>
-	<description>Perflog parser </description>
+	<name>pinnacle-data-ingestion</name>
+	<description>Webhook API to consume splunk logs </description>
 	<properties>
 		<java.version>11</java.version>
 		<io.springfox.version>3.0.0</io.springfox.version>
