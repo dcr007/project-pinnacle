@@ -1,6 +1,6 @@
 package com.ondemand.pinnacle.ingestion.services;
 
-import com.ondemand.pinnacle.ingestion.kafka.models.CustomSequences;
+import com.ondemand.pinnacle.ingestion.models.CustomSequences;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Update;

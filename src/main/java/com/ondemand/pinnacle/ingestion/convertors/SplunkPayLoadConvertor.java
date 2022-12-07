@@ -2,10 +2,10 @@ package com.ondemand.pinnacle.ingestion.convertors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ondemand.pinnacle.ingestion.kafka.producer.ExecutionResponse;
-import com.ondemand.pinnacle.ingestion.kafka.models.CallStack;
-import com.ondemand.pinnacle.ingestion.kafka.models.PerfLog;
-import com.ondemand.pinnacle.ingestion.kafka.models.SplunkPayLoad;
-import com.ondemand.pinnacle.ingestion.kafka.models.SplunkResult;
+import com.ondemand.pinnacle.ingestion.models.CallStack;
+import com.ondemand.pinnacle.ingestion.models.PerfLog;
+import com.ondemand.pinnacle.ingestion.models.SplunkPayLoad;
+import com.ondemand.pinnacle.ingestion.models.SplunkResult;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;

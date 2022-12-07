@@ -1,4 +1,4 @@
-package com.ondemand.pinnacle.ingestion.kafka.models;
+package com.ondemand.pinnacle.ingestion.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;

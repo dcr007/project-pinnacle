@@ -1,8 +1,8 @@
 package com.ondemand.pinnacle.ingestion.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.ondemand.pinnacle.ingestion.kafka.models.CallStack;
-import com.ondemand.pinnacle.ingestion.kafka.models.SplunkPayLoad;
+import com.ondemand.pinnacle.ingestion.models.CallStack;
+import com.ondemand.pinnacle.ingestion.models.SplunkPayLoad;
 import org.springframework.http.HttpStatus;
 
 /**

@@ -5,9 +5,9 @@ package com.ondemand.pinnacle.ingestion.kafka.consumer;
  * @created 07/11/2022 - 2:43 PM
  * @description
  */
-import com.ondemand.pinnacle.ingestion.kafka.models.SplunkPayLoad;
+import com.ondemand.pinnacle.ingestion.models.SplunkPayLoad;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-import com.ondemand.pinnacle.ingestion.kafka.models.CallStack;
+import com.ondemand.pinnacle.ingestion.models.CallStack;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;

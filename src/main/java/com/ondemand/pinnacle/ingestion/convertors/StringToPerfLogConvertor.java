@@ -3,8 +3,8 @@ package com.ondemand.pinnacle.ingestion.convertors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ondemand.pinnacle.ingestion.kafka.models.CallStack;
-import com.ondemand.pinnacle.ingestion.kafka.models.PerfLog;
+import com.ondemand.pinnacle.ingestion.models.CallStack;
+import com.ondemand.pinnacle.ingestion.models.PerfLog;
 import com.ondemand.pinnacle.ingestion.services.NextSequenceService;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -40,13 +40,29 @@ public class StringToPerfLogConvertor implements Converter<String,PerfLog> {
         if (perfLogMap.containsKey("stk")) {
             try {
                 stackStr = perfLogMap.get("stk");
+                log.info("value of stackStr is \n{}", stackStr);
                 //removes any extra brackets in the json string
                 stackStr = stackStr.replace("\"\"", "\"").trim();
                 callStack = objectMapper.readValue(stackStr,new TypeReference<CallStack>(){});
 
             } catch (JsonProcessingException ex) {
-                log.error("Error occurred while processing CallStack json,exception details : \n {}"
-                            , ex.getMessage());
+                log.error("Encountered invalid json string for key:STK (:-----((  \n {}"
+                            , pLog.substring(pLog.indexOf("STK=")));
+                try{
+                    log.info("\nattempting to apply a fix,  the invalid json string:...\n");
+                    String StkString = pLog.substring(pLog.indexOf("STK="));
+                    int begin = StkString.indexOf("{", StkString.indexOf("STK=") );
+                    int end1= StkString.length();
+                    StkString = StkString.substring(begin, end1);
+                    StkString= StkString.concat("\"}]}]}]}");
+                    callStack = objectMapper.readValue(StkString,new TypeReference<CallStack>(){});
+                    log.info("Fixing json string - PASS");
+                } catch(JsonProcessingException e){
+                    log.error("Fixing json string - FAIL");
+                    log.error("Error occurred while processing CallStack json,exception details : \n {}"
+                            , e.getMessage());
+
+                }
             }
         }
         perfLogObj = perfLogMap.entrySet()
@@ -139,7 +155,10 @@ public class StringToPerfLogConvertor implements Converter<String,PerfLog> {
                 res.put("dc",m3.group());
             }
 
+
         }
+        if(res.containsKey("STK"))
+            log.info("Value of STK \n{}",res.get("STK"));
         return res;
     }
 

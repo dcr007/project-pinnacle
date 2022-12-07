@@ -1,6 +1,6 @@
 package com.ondemand.pinnacle.ingestion.repository;
 
-import com.ondemand.pinnacle.ingestion.kafka.models.JsonPayLoad;
+import com.ondemand.pinnacle.ingestion.models.JsonPayLoad;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**

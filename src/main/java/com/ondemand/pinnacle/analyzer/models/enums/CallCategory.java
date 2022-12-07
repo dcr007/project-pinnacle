@@ -1,4 +1,4 @@
-package com.ondemand.pinnacle.ingestion.kafka.models.enums;
+package com.ondemand.pinnacle.analyzer.models.enums;
 
 /**
  * @author Chandu D - i861116

@@ -1,6 +1,9 @@
 package com.ondemand.pinnacle.ingestion.kafka.consumer;
 
-import com.ondemand.pinnacle.ingestion.kafka.models.*;
+import com.ondemand.pinnacle.ingestion.models.CallStack;
+import com.ondemand.pinnacle.ingestion.models.PerfLog;
+import com.ondemand.pinnacle.ingestion.models.SplunkPayLoad;
+import com.ondemand.pinnacle.ingestion.models.SplunkResult;
 import com.ondemand.pinnacle.ingestion.repository.CallStackRepository;
 import com.ondemand.pinnacle.ingestion.repository.SplunkPayLoadRepository;
 import com.ondemand.pinnacle.ingestion.services.NextSequenceService;

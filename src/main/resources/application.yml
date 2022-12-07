@@ -7,7 +7,7 @@
 server:
   port: 8851
   servlet:
-    context-path: /svc/perflog
+    context-path: /svc/ingestion
 ### Application ################################################################
 spring:
 #  kafka:

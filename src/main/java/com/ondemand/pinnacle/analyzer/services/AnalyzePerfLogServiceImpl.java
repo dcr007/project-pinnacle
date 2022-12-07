@@ -1,8 +1,9 @@
-package com.ondemand.pinnacle.ingestion.services;
+package com.ondemand.pinnacle.analyzer.services;
 
-import com.ondemand.pinnacle.ingestion.kafka.models.CallStack;
-import com.ondemand.pinnacle.ingestion.kafka.models.SegregatedStack;
-import com.ondemand.pinnacle.ingestion.kafka.models.enums.CallCategory;
+import com.ondemand.pinnacle.ingestion.models.CallStack;
+import com.ondemand.pinnacle.analyzer.models.SegregatedStack;
+import com.ondemand.pinnacle.analyzer.models.enums.CallCategory;
+import com.ondemand.pinnacle.ingestion.models.PerfLog;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,8 +20,8 @@ import java.util.stream.Collectors;
  */
 @Data
 @Slf4j
-@Service("segregateStackService")
-public class SegregateStackServiceImpl implements SegregateStackService {
+@Service("analyzePerfLogServiceImpl")
+public class AnalyzePerfLogServiceImpl implements AnalyzePerfLogService {
 
 
     public static List<CallStack> getSqlStack() {
@@ -32,8 +33,12 @@ public class SegregateStackServiceImpl implements SegregateStackService {
 
         return null;
     }
-
-    public Map<CallCategory, ArrayList<SegregatedStack>> segregatedStack(CallStack stack, Map<CallCategory,
+    @Override
+    public Map<?, ?> analyzePerfLog(PerfLog perfLog) {
+        return null;
+    }
+    @Override
+    public Map<CallCategory, ArrayList<SegregatedStack>> analyzePerfLogStk(CallStack stack, Map<CallCategory,
             ArrayList<SegregatedStack>> classStackMap) {
 
         if (stack.getN().contains(".dwr")) {
@@ -105,13 +110,15 @@ public class SegregateStackServiceImpl implements SegregateStackService {
         if (callStacks != null) {
             for (CallStack stk : callStacks) {
                 log.info("executing call stack {}", stk.toString());
-                segregatedStack(stk, classStackMap);
+                analyzePerfLogStk(stk, classStackMap);
             }
         }
 
         return classStackMap;
 
     }
+
+
 
 
 }

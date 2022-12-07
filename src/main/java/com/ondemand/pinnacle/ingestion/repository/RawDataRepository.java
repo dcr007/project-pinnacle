@@ -1,6 +1,6 @@
 package com.ondemand.pinnacle.ingestion.repository;
 
-import com.ondemand.pinnacle.ingestion.kafka.models.RawData;
+import com.ondemand.pinnacle.ingestion.models.RawData;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**

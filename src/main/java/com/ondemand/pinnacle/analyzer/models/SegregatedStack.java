@@ -1,7 +1,7 @@
-package com.ondemand.pinnacle.ingestion.kafka.models;
+package com.ondemand.pinnacle.analyzer.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.ondemand.pinnacle.ingestion.kafka.models.enums.CallCategory;
+import com.ondemand.pinnacle.analyzer.models.enums.CallCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

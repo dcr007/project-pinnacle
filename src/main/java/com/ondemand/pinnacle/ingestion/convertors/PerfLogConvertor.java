@@ -2,7 +2,7 @@ package com.ondemand.pinnacle.ingestion.convertors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ondemand.pinnacle.ingestion.kafka.models.PerfLog;
+import com.ondemand.pinnacle.ingestion.models.PerfLog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

@@ -1,8 +1,8 @@
-package com.ondemand.pinnacle.ingestion.services;
+package com.ondemand.pinnacle.analyzer.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ondemand.pinnacle.ingestion.kafka.models.CallStack;
+import com.ondemand.pinnacle.ingestion.models.CallStack;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

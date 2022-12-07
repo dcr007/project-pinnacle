@@ -1,4 +1,4 @@
-package com.ondemand.pinnacle.ingestion.kafka.models;
+package com.ondemand.pinnacle.ingestion.models;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -8,8 +8,6 @@ import lombok.extern.jackson.Jacksonized;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import java.io.Serializable;
 
 /**

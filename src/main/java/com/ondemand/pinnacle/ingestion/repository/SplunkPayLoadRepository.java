@@ -1,6 +1,6 @@
 package com.ondemand.pinnacle.ingestion.repository;
 
-import com.ondemand.pinnacle.ingestion.kafka.models.SplunkPayLoad;
+import com.ondemand.pinnacle.ingestion.models.SplunkPayLoad;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

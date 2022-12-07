@@ -7,9 +7,9 @@ package com.ondemand.pinnacle.ingestion.kafka.producer;
  */
 
 
-import com.ondemand.pinnacle.ingestion.kafka.models.CallStack;
-import com.ondemand.pinnacle.ingestion.kafka.models.SplunkPayLoad;
-import com.ondemand.pinnacle.ingestion.kafka.models.SplunkResult;
+import com.ondemand.pinnacle.ingestion.models.CallStack;
+import com.ondemand.pinnacle.ingestion.models.SplunkPayLoad;
+import com.ondemand.pinnacle.ingestion.models.SplunkResult;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;

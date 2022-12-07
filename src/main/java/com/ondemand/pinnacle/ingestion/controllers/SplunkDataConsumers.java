@@ -2,14 +2,14 @@ package com.ondemand.pinnacle.ingestion.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.ondemand.pinnacle.ingestion.kafka.models.CallStack;
-import com.ondemand.pinnacle.ingestion.kafka.models.SegregatedStack;
-import com.ondemand.pinnacle.ingestion.kafka.models.SplunkPayLoad;
-import com.ondemand.pinnacle.ingestion.kafka.models.enums.CallCategory;
+import com.ondemand.pinnacle.ingestion.models.CallStack;
+import com.ondemand.pinnacle.analyzer.models.SegregatedStack;
+import com.ondemand.pinnacle.ingestion.models.SplunkPayLoad;
+import com.ondemand.pinnacle.analyzer.models.enums.CallCategory;
 import com.ondemand.pinnacle.ingestion.kafka.producer.Producer;
 import com.ondemand.pinnacle.ingestion.services.CallStackService;
-import com.ondemand.pinnacle.ingestion.services.FetchPerfLogDataService;
-import com.ondemand.pinnacle.ingestion.services.SegregateStackService;
+import com.ondemand.pinnacle.analyzer.services.FetchPerfLogDataService;
+import com.ondemand.pinnacle.analyzer.services.AnalyzePerfLogService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +27,13 @@ import java.util.concurrent.TimeoutException;
 /**
  * @author Chandu D - i861116
  * @created 12/10/2022 - 12:28 PM
- * @description - Swagger UI @ - http://localhost:8851/svc/perflog/swagger-ui/
+ * @description - Swagger UI @ - <a href="http://localhost:8851/svc/ingestion/swagger-ui/">...</a>
  */
 @RestController
-@RequestMapping(value = "api/internal/parser")
+@RequestMapping(value = "api/external/webhook")
 @Slf4j
 @AllArgsConstructor
-public class ParserControllers {
+public class SplunkDataConsumers {
 
     @Autowired
     private final Producer producer;
@@ -43,9 +43,24 @@ public class ParserControllers {
     private FetchPerfLogDataService fetchPerfLogDataService;
 //    String TOPIC_NAME = "perflog-for-dwr-calls";
     @Autowired
-    private SegregateStackService segregateStackService;
+    private AnalyzePerfLogService analyzePerfLogService;
     @Autowired
     private CallStackService callStackService;
+
+
+    @PostMapping("/sendToDwrQueue")
+    public HttpStatus sendSplunkPayLoadToQueue(@RequestBody SplunkPayLoad splunkPayLoad)
+            throws ExecutionException, InterruptedException, TimeoutException {
+        return producer.sendDwrLogs(splunkPayLoad).getStatusCode();
+
+    }
+    @PostMapping(value = "/postSplunkPayLoad")
+    public HttpStatus postSplunkPayLoad(@RequestBody SplunkPayLoad splunkPayLoad) {
+
+        HttpStatus status =
+                callStackService.save(splunkPayLoad);
+        return status;
+    }
 
     @GetMapping("/getCallStack")
     public ResponseEntity<CallStack> getCallStack() throws JsonProcessingException {
@@ -63,7 +78,7 @@ public class ParserControllers {
 
         log.info("Received call stack :\n{}", callStack);
         Map<CallCategory, ArrayList<SegregatedStack>> callCategoryMap = new HashMap<>();
-        return ResponseEntity.ok(segregateStackService.segregatedStack(callStack, callCategoryMap));
+        return ResponseEntity.ok(analyzePerfLogService.analyzePerfLogStk(callStack, callCategoryMap));
     }
 
     @PostMapping("/saveCallStack")
@@ -72,18 +87,11 @@ public class ParserControllers {
     }
 
     @PostMapping("/sendToCallStackQueue")
-    public String sendCallStackToQueue(@RequestBody CallStack callStack) {
+    public String sendSplunkPayLoadToQueue(@RequestBody CallStack callStack) {
         producer.sendMessage(callStack);
         return "Message published sucessfully";
     }
 
-    @PostMapping("/sendToDwrQueue")
-    public HttpStatus sendCallStackToQueue(@RequestBody SplunkPayLoad dwrStack)
-            throws ExecutionException, InterruptedException, TimeoutException {
-
-        return producer.sendDwrLogs(dwrStack).getStatusCode();
-        // return "Message published sucessfully";
-    }
 
 
     @PostMapping("/postRawCallStack")
@@ -94,11 +102,5 @@ public class ParserControllers {
         return status;
     }
 
-    @PostMapping(value = "/postSplunkPayLoad")
-    public HttpStatus postSplunkPayLoad(@RequestBody SplunkPayLoad splunkPayLoad) {
 
-        HttpStatus status =
-                callStackService.save(splunkPayLoad);
-        return status;
-    }
 }

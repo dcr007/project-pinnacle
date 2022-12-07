@@ -1,4 +1,4 @@
-package com.ondemand.pinnacle.ingestion.kafka.models;
+package com.ondemand.pinnacle.ingestion.models;
 
 /**
  * @author Chandu D - i861116
