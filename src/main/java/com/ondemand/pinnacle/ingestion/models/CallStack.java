@@ -18,7 +18,6 @@ import java.util.List;
 @Jacksonized
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Document(collection = "logs")
 public class CallStack implements Serializable {
     private static final long serialVersionUID = -1698763054778439285L;
     @Id

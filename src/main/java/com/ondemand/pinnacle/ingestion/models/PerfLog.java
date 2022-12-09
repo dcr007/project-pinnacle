@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 
@@ -17,10 +19,12 @@ import java.io.Serializable;
 @Builder(toBuilder = true)
 @Jacksonized
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Document("PerfLog-#{@environment.getProperty('mongodb.collections.perf-logs.dwr-suffix')}")
 public class PerfLog implements Serializable {
     private static final long serialVersionUID = -5238163054776439285L;
-    @Id
     String perfLogId;
+    @Id
+    @Indexed(unique = true,sparse = true)
     String timeStamp;
     String dc;
     String plv;

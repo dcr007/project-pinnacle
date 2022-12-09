@@ -9,6 +9,7 @@ server:
   servlet:
     context-path: /svc/ingestion
 ### Application ################################################################
+
 spring:
 #  kafka:
 #      bootstrap-servers: ${kafka_bootstrap_servers:localhost:29092}
@@ -24,6 +25,7 @@ spring:
       matching-strategy: ANT_PATH_MATCHER
   data:
     mongodb:
+      auto-index-creation: true
       authentication-database: admin
       username: admin
       password: password
@@ -31,12 +33,20 @@ spring:
       port: 27017
       host: localhost
   application:
-    name: perflog-parser
-#  jackson:
+    name: pinnacle-data-ingestion
+
+  #  jackson:
 #    serialization:
 #      FAIL_ON_EMPTY_BEANS: false
   jpa:
     open-in-view: false
+###mongo collections#
+mongodb:
+  collections:
+    perf-logs:
+      dwr-suffix: dwr
+
+
 ### Kafka ################################################################
 kafka:
     bootstrapAddress : localhost:9092 # kafka bootstrap server

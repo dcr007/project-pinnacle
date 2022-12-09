@@ -5,6 +5,7 @@ import com.ondemand.pinnacle.ingestion.models.PerfLog;
 import com.ondemand.pinnacle.ingestion.models.SplunkPayLoad;
 import com.ondemand.pinnacle.ingestion.models.SplunkResult;
 import com.ondemand.pinnacle.ingestion.repository.CallStackRepository;
+import com.ondemand.pinnacle.ingestion.repository.PerfLogRepository;
 import com.ondemand.pinnacle.ingestion.repository.SplunkPayLoadRepository;
 import com.ondemand.pinnacle.ingestion.services.NextSequenceService;
 import lombok.AllArgsConstructor;
@@ -17,9 +18,6 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author Chandu D - i861116
  * @created 07/11/2022 - 2:13 PM
@@ -31,14 +29,17 @@ import java.util.List;
 public class CallStackConsumerService {
 
     @Autowired
-    private CallStackRepository callStackRepository ;
-    @Autowired
     ConversionService conversionService;
     @Autowired
     NextSequenceService nextSequenceIdGeneratorService;
-
+    @Autowired
+    private CallStackRepository callStackRepository;
     @Autowired
     private SplunkPayLoadRepository splunkPayLoadRepository;
+
+    @Autowired
+    private PerfLogRepository perfLogRepository;
+
 
     @KafkaListener(topics = "topic-callStack-call", containerFactory = "kafkaListenerContainerFactory")
     public void consume(final @Payload CallStack callStack,
@@ -51,7 +52,7 @@ public class CallStackConsumerService {
         log.info(String.format("#### -> Consumed message -> TIMESTAMP: %d\n%s\noffset: %d\nkey: %s\npartition: %d\ntopic: %s",
                 ts, callStack, offset, key, partition, topic));
 
-        log.info("Persisting message : {}",callStack);
+        log.info("Persisting message : {}", callStack);
         callStackRepository.insert(callStack);
     }
 
@@ -65,34 +66,34 @@ public class CallStackConsumerService {
     ) {
         log.info(String.format("\n#### -> Consumed message -> \n TIMESTAMP: %d\n%s\noffset: %d\nkey: %s\npartition: %d\ntopic: %s",
                 ts, splunkPayLoad, offset, key, partition, topic));
-        splunkPayLoad.setPayLoadId(String.valueOf(nextSequenceIdGeneratorService.getNextSequence("payLoadId-topic:"+topic+"-")));
+        splunkPayLoad.setPayLoadId(String.valueOf(nextSequenceIdGeneratorService.getNextSequence("payLoadId-topic:" + topic + "-")));
         splunkPayLoad.setTime(String.valueOf(ts));
 
         SplunkResult result = splunkPayLoad.getResult();
-        result.setResultId(String.valueOf(nextSequenceIdGeneratorService.getNextSequence("resultId-topic:"+topic+"-")));
-        List<PerfLog> perfLogList = new ArrayList<>();
-        PerfLog rawData;
+        result.setResultId(String.valueOf(nextSequenceIdGeneratorService.getNextSequence("resultId-topic:" + topic + "-")));
+        PerfLog perfLog = null;
 
 //                Trigger the converter here :
-        if(result.getRaw()!=null){
-            rawData= conversionService.convert(result.getRaw(), PerfLog.class);
-            perfLogList.add(rawData);
-            result.setPerfLog(perfLogList);
-        }
-        if(result.get_raw()!=null){
-            rawData= conversionService.convert(result.get_raw(), PerfLog.class);
-            perfLogList.add(rawData);
-            result.setPerfLog(perfLogList);
+        if (result.getRaw() != null) {
+            perfLog = conversionService.convert(result.getRaw(), PerfLog.class);
+            result.setPerfLog(perfLog);
         }
 
+
         log.info("===============================");
-        log.info("Converting PerfLog  \n{}",splunkPayLoad.getResult().getPerfLog());
+        log.info("Converting PerfLog  \n{}", splunkPayLoad.getResult().getPerfLog());
         log.info("===============================");
 
-        log.info("Persisting message id: {}",splunkPayLoad.getSid());
 
-//        log.info("Raw data is : {} ",splunkPayLoad.getResult().getPerfLog());
-        splunkPayLoadRepository.insert(splunkPayLoad);
+        try {
+            assert perfLog != null;
+            perfLogRepository.insert(splunkPayLoad.getResult().getPerfLog());
+            log.info("saved PerfLogData with timeStamp {}", perfLog.getTimeStamp());
+        } catch (RuntimeException duplicateKeyException) {
+            log.error("saving perfLog entry with Id {} failed", perfLog.getPerfLogId());
+            log.error("Duplicate perfLog entry with Id {} encountered for time stamp {}", perfLog.getPerfLogId(), perfLog.getTimeStamp());
+            log.error(duplicateKeyException.getMessage());
+        }
     }
 
 }

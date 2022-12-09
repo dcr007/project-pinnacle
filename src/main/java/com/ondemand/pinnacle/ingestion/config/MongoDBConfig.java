@@ -12,8 +12,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
+import org.springframework.data.mongodb.core.mapping.event.ValidatingMongoEventListener;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,8 +53,8 @@ public class MongoDBConfig extends AbstractMongoClientConfiguration {
     @Override
     public @NotNull MongoCustomConversions customConversions(){
         converters.add(new StringToPerfLogConvertor());
-//        converters.add(new SplunkPayLoadConvertor());
         log.debug("Size of convertors: {}", converters.size());
         return  new MongoCustomConversions(converters);
     }
+
 }

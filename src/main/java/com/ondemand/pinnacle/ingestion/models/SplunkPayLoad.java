@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
@@ -20,11 +22,13 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Jacksonized
 @Builder
-@Document(collection = "SplunkPayLoad")
+//@Document(collection = "SplunkPayLoad")
+@CompoundIndexes({
+        @CompoundIndex(name = "payload_ts_idx", def = "{'result.perfLog.timeStamp' : 1} ",
+                unique = true, background = true)})
 public class SplunkPayLoad implements Serializable {
 
     private static final long serialVersionUID = -1238163054776439285L;
-
     @Id
     private String payLoadId;
     private String sid;

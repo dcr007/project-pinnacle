@@ -6,6 +6,7 @@ import com.ondemand.pinnacle.ingestion.models.JsonPayLoad;
 import com.ondemand.pinnacle.ingestion.models.SplunkPayLoad;
 import com.ondemand.pinnacle.ingestion.repository.CallStackRepository;
 import com.ondemand.pinnacle.ingestion.repository.JsonPayLoadRepository;
+import com.ondemand.pinnacle.ingestion.repository.PerfLogRepository;
 import com.ondemand.pinnacle.ingestion.repository.SplunkPayLoadRepository;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,9 @@ public class CallStackServiceImpl implements CallStackService {
 
     @Autowired
     private SplunkPayLoadRepository splunkPayLoadRepository;
+
+    @Autowired
+    private PerfLogRepository perfLogRepository;
 
     @Autowired
     private JsonPayLoadRepository rawDataRepository;
@@ -65,14 +69,10 @@ public class CallStackServiceImpl implements CallStackService {
     @Override
     @Transactional
     public HttpStatus save(SplunkPayLoad splunkPayLoad) {
-//        JsonPayLoad rawEntity = new JsonPayLoad();
-//        rawEntity.setPayload(stack);
-//        rawEntity.setId(LocalDateTime.now().toString());
         try{
-            if(splunkPayLoadRepository.save(splunkPayLoad)!=null){
-                log.info("PayloadId saved: \n{}", splunkPayLoad);
-                return HttpStatus.OK;
-            }else return HttpStatus.ALREADY_REPORTED;
+            splunkPayLoadRepository.save(splunkPayLoad);
+            log.info("PerfLog saved: \n{}", splunkPayLoad.getResult().getPerfLog());
+            return HttpStatus.OK;
         }catch (DataAccessException e){
             log.error("Unable to save stackId: {}\t Exception thrown: \n {}",splunkPayLoad.getSid(),e.getLocalizedMessage());
             return HttpStatus.BAD_REQUEST;

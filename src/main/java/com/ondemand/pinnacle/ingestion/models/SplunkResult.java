@@ -1,12 +1,17 @@
 package com.ondemand.pinnacle.ingestion.models;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.io.Serializable;
 import java.util.List;
 
@@ -30,7 +35,10 @@ public class SplunkResult implements Serializable {
     private String dc;
     @JsonAlias({"URL"})
     private String url;
+
+    @JsonAlias({"_raw"})
     private String raw;
-    private String _raw;
-    private List<PerfLog> perfLog;
+//    private String _raw;
+    @Valid
+    private PerfLog perfLog;
 }
