@@ -13,8 +13,8 @@ import java.util.Map;
  * @created 01/11/2022 - 9:01 PM
  * @description
  */
-public interface AnalyzePerfLogService {
+public interface PerfLogAnalyzerService {
     Map<?,?>analyzePerfLog(PerfLog perfLog);
-    Map<CallCategory, ArrayList<SegregatedStack>> analyzePerfLogStk(CallStack stack, Map<CallCategory,ArrayList<SegregatedStack>> classStackMap);
+    Map<CallCategory, ArrayList<SegregatedStack>> analyzeCallStack(CallStack stack, Map<CallCategory,ArrayList<SegregatedStack>> classStackMap);
 
 }

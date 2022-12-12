@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Data
 @Slf4j
 @Service("analyzePerfLogServiceImpl")
-public class AnalyzePerfLogServiceImpl implements AnalyzePerfLogService {
+public class PerfLogAnalyzerServiceImpl implements PerfLogAnalyzerService {
 
 
     public static List<CallStack> getSqlStack() {
@@ -35,10 +35,14 @@ public class AnalyzePerfLogServiceImpl implements AnalyzePerfLogService {
     }
     @Override
     public Map<?, ?> analyzePerfLog(PerfLog perfLog) {
+        /** TODO: 1. Build PerflogSummary .
+            * 2. Analyze callstack
+         * 3. return  Map<PerfLogSummary, Map<CallCategory, ArrayList<SegregatedStack>>
+        **/
         return null;
     }
     @Override
-    public Map<CallCategory, ArrayList<SegregatedStack>> analyzePerfLogStk(CallStack stack, Map<CallCategory,
+    public Map<CallCategory, ArrayList<SegregatedStack>> analyzeCallStack(CallStack stack, Map<CallCategory,
             ArrayList<SegregatedStack>> classStackMap) {
 
         if (stack.getN().contains(".dwr")) {
@@ -110,7 +114,7 @@ public class AnalyzePerfLogServiceImpl implements AnalyzePerfLogService {
         if (callStacks != null) {
             for (CallStack stk : callStacks) {
                 log.info("executing call stack {}", stk.toString());
-                analyzePerfLogStk(stk, classStackMap);
+                analyzeCallStack(stk, classStackMap);
             }
         }
 

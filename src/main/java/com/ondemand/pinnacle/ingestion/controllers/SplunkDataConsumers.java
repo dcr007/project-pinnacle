@@ -9,7 +9,7 @@ import com.ondemand.pinnacle.analyzer.models.enums.CallCategory;
 import com.ondemand.pinnacle.ingestion.kafka.producer.Producer;
 import com.ondemand.pinnacle.ingestion.services.CallStackService;
 import com.ondemand.pinnacle.analyzer.services.FetchPerfLogDataService;
-import com.ondemand.pinnacle.analyzer.services.AnalyzePerfLogService;
+import com.ondemand.pinnacle.analyzer.services.PerfLogAnalyzerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ public class SplunkDataConsumers {
     private FetchPerfLogDataService fetchPerfLogDataService;
 //    String TOPIC_NAME = "perflog-for-dwr-calls";
     @Autowired
-    private AnalyzePerfLogService analyzePerfLogService;
+    private PerfLogAnalyzerService analyzePerfLogService;
     @Autowired
     private CallStackService callStackService;
 
@@ -78,7 +78,7 @@ public class SplunkDataConsumers {
 
         log.info("Received call stack :\n{}", callStack);
         Map<CallCategory, ArrayList<SegregatedStack>> callCategoryMap = new HashMap<>();
-        return ResponseEntity.ok(analyzePerfLogService.analyzePerfLogStk(callStack, callCategoryMap));
+        return ResponseEntity.ok(analyzePerfLogService.analyzeCallStack(callStack, callCategoryMap));
     }
 
     @PostMapping("/saveCallStack")
