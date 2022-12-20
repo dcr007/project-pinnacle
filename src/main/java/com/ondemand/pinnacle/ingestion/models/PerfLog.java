@@ -1,6 +1,9 @@
 package com.ondemand.pinnacle.ingestion.models;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 import org.springframework.data.annotation.Id;
@@ -19,53 +22,138 @@ import java.io.Serializable;
 @Builder(toBuilder = true)
 @Jacksonized
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Document("PerfLog-#{@environment.getProperty('mongodb.collections.perf-logs.dwr-suffix')}")
 public class PerfLog implements Serializable {
+//public class PerfLog  {
     private static final long serialVersionUID = -5238163054776439285L;
     String perfLogId;
+    @JsonAlias("_id")
     @Id
     @Indexed(unique = true,sparse = true)
     String timeStamp;
-    String dc;
-    String plv;
-    String cip;
-    String cmid;
-    String cmn;
-    String sn;
-    String dpn;
-    String uid;
-    String un;
-    String iuid;
-    String eid;
-    String agn;
-    String rid;
-    String mtd;
+
+    @JsonAlias("dc")
+    String dataCenter;
+
+    @JsonAlias("plv")
+    String perfLevel;
+
+    @JsonAlias("cip")
+    String clientIp;
+
+    @JsonAlias("cmid")
+    String companyId;
+
+    @JsonAlias("cmn")
+    String companyName;
+
+    @JsonAlias("sn")
+    String schemaName;
+
+    @JsonAlias("dpn")
+    String dbPoolName;
+
+    @JsonAlias("uid")
+    String userId;
+
+    @JsonAlias("un")
+    String userName;
+
+    @JsonAlias("iuid")
+    String internalUserId;
+
+    @JsonAlias("eid")
+    String eventId;
+
+    @JsonAlias("agn")
+    String agent;
+
+    @JsonAlias("rid")
+    String requestId;
+    
+    @JsonAlias("mtd")
+    String requestMethod;
+
+    @JsonAlias("url")
     String url;
-    String rqt;
-    String mid;
-    String pid;
-    String pq;
+
+    @JsonAlias("rqt")
+    String requestExecutionTimeInMs;
+
+    @JsonAlias("mid")
+    String moduleId;
+
+    @JsonAlias("pid")
+    String pageId;
+
+    @JsonAlias("pq")
+    String pageQualifier;
+    @JsonAlias("sub")
     String sub;
-    String mem;
-    String cpu;
-    String ucpu;
-    String scpu;
-    String fre;
-    String fwr;
-    String nre;
-    String nwr;
-    String sqlc;
-    String sqlt;
-    String rps;
-    String sid;
-    String gid;
-    String hsid;
-    String csl;
-    String ccon;
-    String csup;
-    String loc;
-    String cloc;
-    String cext;
-    String crem;
-    CallStack stk;
+
+    @JsonAlias("mem")
+    String totalMemory;
+    @JsonAlias("cpu")
+    String totalCpu;
+
+    @JsonAlias("ucpu")
+    String userCpu;
+
+    @JsonAlias("scpu")
+    String systemCpu;
+
+    @JsonAlias("fre")
+    String fileBytesReadInKb;
+
+    @JsonAlias("fwr")
+    String fileBytesWriteInKb;
+
+    @JsonAlias("nre")
+    String networkBytesReadInKb;
+
+    @JsonAlias("nwr")
+    String networkBytesWrittenInKb;
+
+    @JsonAlias("sqlc")
+    String totalSqlInvokingCount;
+
+    @JsonAlias("sqlt")
+    String totalSqlTimeInMs;
+
+    @JsonAlias("rps")
+    String httpStatusCode;
+
+    @JsonAlias("sid")
+    String sessionId;
+
+    @JsonAlias("gid")
+    String globalId;
+
+    @JsonAlias("hsid")
+    String hashSessionId;
+
+    @JsonAlias("csl")
+    String callStackLevel;
+
+    @JsonAlias("ccon")
+    String totalConcurrentCacheTime;
+
+    @JsonAlias("csup")
+    String totalSupersfedisCacheTime;
+
+    @JsonAlias("loc")
+    String locale;
+
+    @JsonAlias("cloc")
+    String totalLocalsfedisCacheTime;
+
+    @JsonAlias("cext")
+    String totalExtremesfedisCacheTime;
+
+    @JsonAlias("crem")
+    String totalRemotesfedisCacheTime;
+
+    @JsonAlias("stk")
+    CallStack callStack;
 }

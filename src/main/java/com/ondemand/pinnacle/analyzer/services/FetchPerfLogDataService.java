@@ -71,8 +71,8 @@ public class FetchPerfLogDataService {
                 ObjectMapper objectMapper = new ObjectMapper();
                 CallStack callStack = objectMapper.readValue(getStackData().get(),CallStack.class);
 
-                log.info("Value of n: \t {}",callStack.getN());
-                log.info("Value of t: \t {}",callStack.getT());
+                log.info("Value of n: \t {}",callStack.getCallNode());
+                log.info("Value of t: \t {}",callStack.getTotalInvokeTimeInMs());
 
                 return callStack;
 

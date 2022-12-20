@@ -2,10 +2,12 @@ package com.ondemand.pinnacle.ingestion.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.ondemand.pinnacle.analyzer.models.AnalysisResult;
 import com.ondemand.pinnacle.ingestion.models.CallStack;
-import com.ondemand.pinnacle.analyzer.models.SegregatedStack;
+import com.ondemand.pinnacle.analyzer.models.StackClassification;
+import com.ondemand.pinnacle.ingestion.models.PerfLog;
 import com.ondemand.pinnacle.ingestion.models.SplunkPayLoad;
-import com.ondemand.pinnacle.analyzer.models.enums.CallCategory;
+import com.ondemand.pinnacle.analyzer.models.enums.StackCategory;
 import com.ondemand.pinnacle.ingestion.kafka.producer.Producer;
 import com.ondemand.pinnacle.ingestion.services.CallStackService;
 import com.ondemand.pinnacle.analyzer.services.FetchPerfLogDataService;
@@ -73,13 +75,22 @@ public class SplunkDataConsumers {
     }
 
     @PostMapping("/parseCallStack")
-    public ResponseEntity<Map<CallCategory, ArrayList<SegregatedStack>>>
+    public ResponseEntity<Map<StackCategory, ArrayList<StackClassification>>>
     parseCallStack(@RequestBody CallStack callStack) throws JsonProcessingException {
 
         log.info("Received call stack :\n{}", callStack);
-        Map<CallCategory, ArrayList<SegregatedStack>> callCategoryMap = new HashMap<>();
+        Map<StackCategory, ArrayList<StackClassification>> callCategoryMap = new HashMap<>();
         return ResponseEntity.ok(analyzePerfLogService.analyzeCallStack(callStack, callCategoryMap));
     }
+
+    /*@PostMapping("/getAnalysisResult")
+    public ResponseEntity<AnalysisResult>
+    parseCallStack(@RequestBody PerfLog perfLog) throws JsonProcessingException {
+
+        log.info("Received perfLog stack :\n{}", perfLog);
+        Map<StackCategory, ArrayList<StackClassification>> callCategoryMap = new HashMap<>();
+        return ResponseEntity.ok(analyzePerfLogService.generateReport(perfLog));
+    }*/
 
     @PostMapping("/saveCallStack")
     public String saveCallStack(@RequestBody CallStack callStack) {

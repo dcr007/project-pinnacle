@@ -1,7 +1,7 @@
 package com.ondemand.pinnacle.analyzer.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.ondemand.pinnacle.analyzer.models.enums.CallCategory;
+import com.ondemand.pinnacle.analyzer.models.enums.StackCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,11 +17,11 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SegregatedStack implements Serializable {
+public class StackClassification implements Serializable {
     private static final long serialVersionUID = -1698763054978439285L;
 
     private String qualifierName;
-    private CallCategory callCategory;
+    private StackCategory stackCategory;
     private boolean hasThresholdExceeded ;
     private String callId;
     private long iterationCount;

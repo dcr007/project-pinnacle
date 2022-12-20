@@ -40,11 +40,14 @@ public class StringToPerfLogConvertor implements Converter<String,PerfLog> {
         if (perfLogMap.containsKey("stk")) {
             try {
                 stackStr = perfLogMap.get("stk");
-                log.info("value of stackStr is \n{}", stackStr);
+                // log.info("value of stackStr is \n{}", stackStr);
                 //removes any extra brackets in the json string
                 stackStr = stackStr.replace("\"\"", "\"").trim();
                 callStack = objectMapper.readValue(stackStr,new TypeReference<CallStack>(){});
-
+                callStack = callStack.toBuilder()
+                        .callStackId(String.valueOf(nextSequenceIdGeneratorService
+                                .getNextSequence("callStackId"))).build();
+                log.info("CallStack Id is "+callStack.getCallStackId());
             } catch (JsonProcessingException ex) {
                 log.error("Encountered invalid json string for key:STK (:-----((  \n {}"
                             , pLog.substring(pLog.indexOf("STK=")));
@@ -56,6 +59,9 @@ public class StringToPerfLogConvertor implements Converter<String,PerfLog> {
                     StkString = StkString.substring(begin, end1);
                     StkString= StkString.concat("\"}]}]}]}");
                     callStack = objectMapper.readValue(StkString,new TypeReference<CallStack>(){});
+
+
+
                     log.info("Fixing json string - PASS");
                 } catch(JsonProcessingException e){
                     log.error("Fixing json string - FAIL");
@@ -69,48 +75,48 @@ public class StringToPerfLogConvertor implements Converter<String,PerfLog> {
                 .stream()
                 .filter(Objects::nonNull)
                 .map(perfMap -> PerfLog.builder()
-                        .perfLogId(String.valueOf(nextSequenceIdGeneratorService.getNextSequence("perfLogId-")))
+                        .perfLogId(String.valueOf(nextSequenceIdGeneratorService.getNextSequence("perfLogId")))
                         .timeStamp(perfLogMap.getOrDefault("timeStamp","no entry found: timeStamp"))
-                        .dc(perfLogMap.getOrDefault("dc","no entry found: dc"))
-                        .plv(perfLogMap.getOrDefault("plv","no entry found: plv"))
-                        .cip(perfLogMap.getOrDefault("cip","no entry found: cip"))
-                        .cmid(perfLogMap.getOrDefault("cmid","no entry found: cmid"))
-                        .cmn(perfLogMap.getOrDefault("cmn","no entry found:cmn"))
-                        .sn(perfLogMap.getOrDefault("sn","no entry found:sn"))
-                        .dpn(perfLogMap.getOrDefault("dpn","no entry found:dpn"))
-                        .iuid(perfLogMap.getOrDefault("iuid","no entry found:iuid"))
-                        .eid(perfLogMap.getOrDefault("eid","no entry found:eid"))
-                        .agn(perfLogMap.getOrDefault("agn","no entry found:agn"))
-                        .rid(perfLogMap.getOrDefault("rid","no entry found:rid"))
-                        .mtd(perfLogMap.getOrDefault("mtd","no entry found:mtd"))
+                        .dataCenter(perfLogMap.getOrDefault("dc","no entry found: dc"))
+                        .perfLevel(perfLogMap.getOrDefault("plv","no entry found: plv"))
+                        .clientIp(perfLogMap.getOrDefault("cip","no entry found: cip"))
+                        .companyId(perfLogMap.getOrDefault("cmid","no entry found: cmid"))
+                        .companyName(perfLogMap.getOrDefault("cmn","no entry found:cmn"))
+                        .schemaName(perfLogMap.getOrDefault("sn","no entry found:sn"))
+                        .dbPoolName(perfLogMap.getOrDefault("dpn","no entry found:dpn"))
+                        .internalUserId(perfLogMap.getOrDefault("iuid","no entry found:iuid"))
+                        .eventId(perfLogMap.getOrDefault("eid","no entry found:eid"))
+                        .agent(perfLogMap.getOrDefault("agn","no entry found:agn"))
+                        .requestId(perfLogMap.getOrDefault("rid","no entry found:rid"))
+                        .requestMethod(perfLogMap.getOrDefault("mtd","no entry found:mtd"))
                         .url(perfLogMap.getOrDefault("url","no entry found:url"))
-                        .rqt(perfLogMap.getOrDefault("rqt","no entry found:rqt"))
-                        .mid(perfLogMap.getOrDefault("mid","no entry found:mid"))
-                        .pid(perfLogMap.getOrDefault("pid","no entry found:pid"))
-                        .pq(perfLogMap.getOrDefault("pq","no entry found:pq"))
+                        .requestExecutionTimeInMs(perfLogMap.getOrDefault("rqt","no entry found:rqt"))
+                        .moduleId(perfLogMap.getOrDefault("mid","no entry found:mid"))
+                        .pageId(perfLogMap.getOrDefault("pid","no entry found:pid"))
+                        .pageQualifier(perfLogMap.getOrDefault("pq","no entry found:pq"))
                         .sub(perfLogMap.getOrDefault("sub","no entry found:sub"))
-                        .mem(perfLogMap.getOrDefault("mem","no entry found:mem"))
-                        .cpu(perfLogMap.getOrDefault("cpu","no entry found:cpu"))
-                        .ucpu(perfLogMap.getOrDefault("ucpu","no entry found:ucpu"))
-                        .scpu(perfLogMap.getOrDefault("scpu","no entry found:scpu"))
-                        .fre(perfLogMap.getOrDefault("fre","no entry found:fre"))
-                        .fwr(perfLogMap.getOrDefault("fwr","no entry found:fwr"))
-                        .nre(perfLogMap.getOrDefault("nre","no entry found:nre"))
-                        .nwr(perfLogMap.getOrDefault("nwr","no entry found:nwr"))
-                        .sqlc(perfLogMap.getOrDefault("sqlc","no entry found:sqlc"))
-                        .sqlt(perfLogMap.getOrDefault("sqlt","no entry found:sqlt"))
-                        .rps(perfLogMap.getOrDefault("rps","no entry found:rps"))
-                        .sid(perfLogMap.getOrDefault("sid","no entry found:sid"))
-                        .gid(perfLogMap.getOrDefault("gid","no entry found:gid"))
-                        .hsid(perfLogMap.getOrDefault("hsid","no entry found:hsid"))
-                        .csl(perfLogMap.getOrDefault("csl","no entry found:csl"))
-                        .ccon(perfLogMap.getOrDefault("ccon","no entry found:ccon"))
-                        .csup(perfLogMap.getOrDefault("csup","no entry found:csup"))
-                        .loc(perfLogMap.getOrDefault("loc","no entry found:loc"))
-                        .cloc(perfLogMap.getOrDefault("cloc","no entry found:cloc"))
-                        .cext(perfLogMap.getOrDefault("cext","no entry found:cext"))
-                        .crem(perfLogMap.getOrDefault("crem","no entry found:crem"))
-                        .stk(callStack)
+                        .totalMemory(perfLogMap.getOrDefault("mem","no entry found:mem"))
+                        .totalCpu(perfLogMap.getOrDefault("cpu","no entry found:cpu"))
+                        .userCpu(perfLogMap.getOrDefault("ucpu","no entry found:ucpu"))
+                        .systemCpu(perfLogMap.getOrDefault("scpu","no entry found:scpu"))
+                        .fileBytesReadInKb(perfLogMap.getOrDefault("fre","no entry found:fre"))
+                        .fileBytesWriteInKb(perfLogMap.getOrDefault("fwr","no entry found:fwr"))
+                        .networkBytesReadInKb(perfLogMap.getOrDefault("nre","no entry found:nre"))
+                        .networkBytesWrittenInKb(perfLogMap.getOrDefault("nwr","no entry found:nwr"))
+                        .totalSqlInvokingCount(perfLogMap.getOrDefault("sqlc","no entry found:sqlc"))
+                        .totalSqlTimeInMs(perfLogMap.getOrDefault("sqlt","no entry found:sqlt"))
+                        .httpStatusCode(perfLogMap.getOrDefault("rps","no entry found:rps"))
+                        .sessionId(perfLogMap.getOrDefault("sid","no entry found:sid"))
+                        .globalId(perfLogMap.getOrDefault("gid","no entry found:gid"))
+                        .hashSessionId(perfLogMap.getOrDefault("hsid","no entry found:hsid"))
+                        .callStackLevel(perfLogMap.getOrDefault("csl","no entry found:csl"))
+                        .totalConcurrentCacheTime(perfLogMap.getOrDefault("ccon","no entry found:ccon"))
+                        .totalSupersfedisCacheTime(perfLogMap.getOrDefault("csup","no entry found:csup"))
+                        .locale(perfLogMap.getOrDefault("loc","no entry found:loc"))
+                        .totalLocalsfedisCacheTime(perfLogMap.getOrDefault("cloc","no entry found:cloc"))
+                        .totalExtremesfedisCacheTime(perfLogMap.getOrDefault("cext","no entry found:cext"))
+                        .totalRemotesfedisCacheTime(perfLogMap.getOrDefault("crem","no entry found:crem"))
+                        .callStack(callStack)
                         .build()
                 ).findFirst().orElseThrow(()->new IllegalStateException("Could not initialize PerfLog"));
         return  perfLogObj;

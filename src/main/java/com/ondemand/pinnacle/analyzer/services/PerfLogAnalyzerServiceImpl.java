@@ -1,14 +1,16 @@
 package com.ondemand.pinnacle.analyzer.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ondemand.pinnacle.analyzer.models.*;
 import com.ondemand.pinnacle.ingestion.models.CallStack;
-import com.ondemand.pinnacle.analyzer.models.SegregatedStack;
-import com.ondemand.pinnacle.analyzer.models.enums.CallCategory;
+import com.ondemand.pinnacle.analyzer.models.enums.StackCategory;
 import com.ondemand.pinnacle.ingestion.models.PerfLog;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,92 +23,113 @@ import java.util.stream.Collectors;
 @Data
 @Slf4j
 @Service("analyzePerfLogServiceImpl")
-public class PerfLogAnalyzerServiceImpl implements PerfLogAnalyzerService {
+public class PerfLogAnalyzerServiceImpl implements
+        PerfLogAnalyzerService<PerfLog,DwrPerfLogSummary,DwrAnalysisResult>
+{
+    private final static ObjectMapper objectMapper = new ObjectMapper();
+    @Override
+    public DwrAnalysisResult generateReport(PerfLog perfLog) {
 
+        log.info("Analysing perflog {}", perfLog.toString());
 
-    public static List<CallStack> getSqlStack() {
+        DwrPerfLogSummary dwrPerfLogSummary = getLogSummary(perfLog);
 
-        return null;
-    }
+//        Map<StackCategory, ArrayList<StackClassification>> callStackAnalysis =
+//               analyzeCallStack(perfLog.getCallStack(),new HashMap<>());
 
-    public static List<CallStack> getServiceStack() {
+        DwrRcaSummary rcaSummary = getRcaSummary(perfLog);
+        log.info("Call stack analyzed successfully \n {}",rcaSummary);
 
-        return null;
+        DwrAnalysisResult dwrAnalysisResultBuild;
+
+        dwrAnalysisResultBuild = DwrAnalysisResult.builder()
+                .dwrPerfLogSummary(dwrPerfLogSummary)
+                .dwrRcaSummary(rcaSummary)
+                .build();
+
+        log.info("DwrAnalysisResult successfully generated \n{}", dwrAnalysisResultBuild);
+
+        return dwrAnalysisResultBuild;
     }
     @Override
-    public Map<?, ?> analyzePerfLog(PerfLog perfLog) {
-        /** TODO: 1. Build PerflogSummary .
-            * 2. Analyze callstack
-         * 3. return  Map<PerfLogSummary, Map<CallCategory, ArrayList<SegregatedStack>>
-        **/
-        return null;
+    public DwrPerfLogSummary getLogSummary(PerfLog perfLog) {
+        return DwrPerfLogSummary.builder().build().generateSummary(perfLog);
     }
     @Override
-    public Map<CallCategory, ArrayList<SegregatedStack>> analyzeCallStack(CallStack stack, Map<CallCategory,
-            ArrayList<SegregatedStack>> classStackMap) {
+    public DwrRcaSummary getRcaSummary(PerfLog perfLog) {
+        Map<StackCategory, ArrayList<StackClassification>> analyzedCallStack = getCallStackAnalysis(perfLog);
+        return DwrRcaSummary.builder().rcaSummary(analyzedCallStack).build();
+    }
+    @Override
+    public  Map<StackCategory, ArrayList<StackClassification>> getCallStackAnalysis(PerfLog perfLog){
 
-        if (stack.getN().contains(".dwr")) {
-            log.info("call :{}", stack.getN());
+        return analyzeCallStack(perfLog.getCallStack(),new HashMap<>());
+    }
+    @Override
+    public Map<StackCategory, ArrayList<StackClassification>> analyzeCallStack(CallStack stack, Map<StackCategory,
+            ArrayList<StackClassification>> classStackMap) {
 
-            SegregatedStack dwrStack = new SegregatedStack(stack.getN(), CallCategory.DWR, true,
-                    "callId-000922", stack.getI(), stack.getT(), stack.getM());
-            List<SegregatedStack> segregatedStackList;
+        if (stack.getCallNode().contains(".dwr")) {
+            log.info("Call node :{}", stack.getCallNode());
 
-            if (classStackMap.get(CallCategory.DWR) != null) {
-                segregatedStackList = (classStackMap.get(CallCategory.SERVICE));
-                segregatedStackList.add(dwrStack);
-            } else segregatedStackList = List.of(dwrStack).stream().collect(Collectors.toCollection(ArrayList::new));
+            StackClassification dwrStack = new StackClassification(stack.getCallNode(), StackCategory.DWR, true,
+                    "callId-000922", stack.getInvokedCount(), stack.getTotalInvokeTimeInMs(), stack.getMemoryUsedByThreadInKb());
+            List<StackClassification> stackClassificationList;
 
-            classStackMap.put(dwrStack.getCallCategory(), (ArrayList<SegregatedStack>) segregatedStackList);
+            if (classStackMap.get(StackCategory.DWR) != null) {
+                stackClassificationList = (classStackMap.get(StackCategory.SERVICE));
+                stackClassificationList.add(dwrStack);
+            } else stackClassificationList = List.of(dwrStack).stream().collect(Collectors.toCollection(ArrayList::new));
+
+            classStackMap.put(dwrStack.getStackCategory(), (ArrayList<StackClassification>) stackClassificationList);
         }
 
+        if (stack.getCallNode().contains(".service.")) {
+            log.info("parsing call :{}", stack.getCallNode());
 
-        if (stack.getN().contains(".service.")) {
-            log.info("parsing call :{}", stack.getN());
+            StackClassification segregatedServiceStack = new StackClassification(stack.getCallNode(), StackCategory.SERVICE
+                    , true, stack.getCallStackId(), stack.getInvokedCount(), stack.getTotalInvokeTimeInMs(), stack.getMemoryUsedByThreadInKb());
+            List<StackClassification> stackClassificationList;
 
-            SegregatedStack segregatedServiceStack = new SegregatedStack(stack.getN(), CallCategory.SERVICE
-                    , true, "callId-000921", stack.getI(), stack.getT(), stack.getM());
-            List<SegregatedStack> segregatedStackList;
-
-            if (classStackMap.get(CallCategory.SERVICE) != null) {
-                segregatedStackList = (classStackMap.get(CallCategory.SERVICE));
-                segregatedStackList.add(segregatedServiceStack);
+            if (classStackMap.get(StackCategory.SERVICE) != null) {
+                stackClassificationList = (classStackMap.get(StackCategory.SERVICE));
+                stackClassificationList.add(segregatedServiceStack);
             } else
-                segregatedStackList = List.of(segregatedServiceStack)
+                stackClassificationList = List.of(segregatedServiceStack)
                         .stream().collect(Collectors.toCollection(ArrayList::new));
 
-            classStackMap.put(segregatedServiceStack.getCallCategory(), (ArrayList<SegregatedStack>) segregatedStackList);
+                classStackMap.put(segregatedServiceStack.getStackCategory(), (ArrayList<StackClassification>) stackClassificationList);
         }
 
-        if (stack.getN().contains("SQL:")) {
-            log.info("parsing call :{}", stack.getN());
-            SegregatedStack segregatedJdbcStack = new SegregatedStack(stack.getN(), CallCategory.JDBC, true, "callId-000926", stack.getI(), stack.getT(), stack.getM());
+        if (stack.getCallNode().contains("SQL:")) {
+            log.info("parsing call :{}", stack.getCallNode());
+            StackClassification segregatedJdbcStack = new StackClassification(stack.getCallNode(), StackCategory.JDBC, true, "callId-000926", stack.getInvokedCount(), stack.getTotalInvokeTimeInMs(), stack.getMemoryUsedByThreadInKb());
 
-            List<SegregatedStack> segregatedStackList;
+            List<StackClassification> stackClassificationList;
 
-            if (classStackMap.get(CallCategory.JDBC) != null) {
-                segregatedStackList = (classStackMap.get(CallCategory.JDBC));
-                segregatedStackList.add(segregatedJdbcStack);
+            if (classStackMap.get(StackCategory.JDBC) != null) {
+                stackClassificationList = (classStackMap.get(StackCategory.JDBC));
+                stackClassificationList.add(segregatedJdbcStack);
             } else
-                segregatedStackList = List.of(segregatedJdbcStack).stream().collect(Collectors.toCollection(ArrayList::new));
+                stackClassificationList = List.of(segregatedJdbcStack).stream().collect(Collectors.toCollection(ArrayList::new));
 
-            classStackMap.put(segregatedJdbcStack.getCallCategory(), (ArrayList<SegregatedStack>) segregatedStackList);
+            classStackMap.put(segregatedJdbcStack.getStackCategory(), (ArrayList<StackClassification>) stackClassificationList);
 
         }
 
-        if (stack.getN().contains(".cachelegacy.impl.")) {
-            log.info("parsing call :{}", stack.getN());
-            SegregatedStack segregatedCacheStack = new SegregatedStack(stack.getN(), CallCategory.CACHE, true, "callId-000922", stack.getI(), stack.getT(), stack.getM());
-            List<SegregatedStack> segregatedStackList;
+        if (stack.getCallNode().contains(".cachelegacy.impl.")) {
+            log.info("parsing call :{}", stack.getCallNode());
+            StackClassification segregatedCacheStack = new StackClassification(stack.getCallNode(), StackCategory.CACHE, true, "callId-000922", stack.getInvokedCount(), stack.getTotalInvokeTimeInMs(), stack.getMemoryUsedByThreadInKb());
+            List<StackClassification> stackClassificationList;
 
-            if (classStackMap.get(CallCategory.CACHE) != null) {
-                segregatedStackList = (classStackMap.get(CallCategory.CACHE));
-                segregatedStackList.add(segregatedCacheStack);
+            if (classStackMap.get(StackCategory.CACHE) != null) {
+                stackClassificationList = (classStackMap.get(StackCategory.CACHE));
+                stackClassificationList.add(segregatedCacheStack);
 
             } else
-                segregatedStackList = List.of(segregatedCacheStack).stream().collect(Collectors.toCollection(ArrayList::new));
+                stackClassificationList = List.of(segregatedCacheStack).stream().collect(Collectors.toCollection(ArrayList::new));
 
-            classStackMap.put(segregatedCacheStack.getCallCategory(), (ArrayList<SegregatedStack>) segregatedStackList);
+            classStackMap.put(segregatedCacheStack.getStackCategory(), (ArrayList<StackClassification>) stackClassificationList);
 
         }
 

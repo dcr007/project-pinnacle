@@ -42,7 +42,7 @@ public class CallStackServiceImpl implements CallStackService {
 
     @Override
     public String save(CallStack stack) {
-        return callStackRepository.save(stack).getId();
+        return callStackRepository.save(stack).getCallStackId();
     }
 
     @Override
