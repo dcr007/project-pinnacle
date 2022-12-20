@@ -18,7 +18,7 @@ import lombok.extern.jackson.Jacksonized;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DwrPerfLogSummary implements PerfLogSummary<DwrPerfLogSummary>{
-    PerfLog perfLogSummary;
+    PerfLog observationSummary;
     @Override
     public DwrPerfLogSummary generateSummary(PerfLog perfLog){
 

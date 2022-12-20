@@ -24,7 +24,7 @@ public class DwrRcaSummary
 //                Map<StackCategory, ArrayList<StackClassification>>,DwrRcaSummary>
 {
 
-    Map<StackCategory, ArrayList<StackClassification>> rcaSummary;
+    Map<StackCategory, ArrayList<StackClassification>> callStackBreakDown;
 
     /*@Override
     public DwrRcaSummary generateRca(PerfLogAnalyzerService analyzePerfLogService, CallStack stack,
