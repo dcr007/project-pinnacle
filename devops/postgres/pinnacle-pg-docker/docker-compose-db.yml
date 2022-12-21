@@ -1,0 +1,57 @@
+
+### RUN ####
+# To spin up PostgreSQL and pgadmin4 run this command in terminal: "docker-compose -f <path to this file> up -d"
+# Above command will hold up your terminal window in interactive view
+# To bring down both services use abort command: ^c
+
+### INFO ###
+# pgadmin4 would be available at 'localhost:8095'. Use admin@sap.com/password for username/password
+# postgres sever info: hostname is 'pg-pinnacle-db'. Use user/pwd123 for username/password
+
+version: '3'
+
+# set up for pg and pgadmin in local environment
+services:
+  postgres:
+    container_name: pg-pinnacle-db
+    image: postgres:11.7-alpine
+    volumes:
+      - pg-pinnacle-db-data:/var/lib/postgresql/data
+    tty: true   # 1 of 2 requirement for detached mode
+    stdin_open: true # 2 of 2 requirement for detached mode
+    ports:
+      - '5433:5433'
+    environment:
+      - POSTGRES_PASSWORD=pwd123
+      - POSTGRES_USER=user
+      - POSTGRES_DB=pinnacle-global-db-dev
+    networks:
+      - backend
+  pgadmin4:
+    container_name: postgres-admin4
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    tty: true
+    stdin_open: true
+    volumes:
+      - postgres-admin4-data:/var/lib/pgadmin
+    ports:
+      - '8095:80'
+      - '8096:443'
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@sap.com
+      - PGADMIN_DEFAULT_PASSWORD=password
+    networks:
+      - backend
+
+# Networks
+networks:
+  backend:
+    driver: bridge
+
+# Volumes
+volumes:
+  pg-pinnacle-db-data:
+  postgres-admin4-data:
+
