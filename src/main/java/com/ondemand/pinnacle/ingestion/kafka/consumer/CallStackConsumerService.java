@@ -1,10 +1,13 @@
 package com.ondemand.pinnacle.ingestion.kafka.consumer;
 
+import com.ondemand.pinnacle.analyzer.models.PerfLogIngestionEvent;
+import com.ondemand.pinnacle.ingestion.entities.IngestionEventQueueEntity;
 import com.ondemand.pinnacle.ingestion.models.CallStack;
 import com.ondemand.pinnacle.ingestion.models.PerfLog;
 import com.ondemand.pinnacle.ingestion.models.SplunkPayLoad;
 import com.ondemand.pinnacle.ingestion.models.SplunkResult;
 import com.ondemand.pinnacle.ingestion.repository.CallStackRepository;
+import com.ondemand.pinnacle.ingestion.repository.IngestionEventQueueRepository;
 import com.ondemand.pinnacle.ingestion.repository.PerfLogRepository;
 import com.ondemand.pinnacle.ingestion.repository.SplunkPayLoadRepository;
 import com.ondemand.pinnacle.ingestion.services.NextSequenceService;
@@ -17,6 +20,9 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author Chandu D - i861116
@@ -36,6 +42,8 @@ public class CallStackConsumerService {
     private CallStackRepository callStackRepository;
     @Autowired
     private SplunkPayLoadRepository splunkPayLoadRepository;
+    @Autowired
+    private IngestionEventQueueRepository ingestionEventQueueRepository;
 
     @Autowired
     private PerfLogRepository perfLogRepository;
@@ -89,9 +97,20 @@ public class CallStackConsumerService {
             assert perfLog != null;
             perfLogRepository.insert(splunkPayLoad.getResult().getPerfLog());
             log.info("saved PerfLogData with timeStamp {}", perfLog.getTimeStamp());
+            synchronized (this){
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss,SSS");
+                LocalDateTime perfLogTimeStamp = LocalDateTime.parse(perfLog.getTimeStamp(), formatter);
+                log.info("recording data ingestion event for perfLogId {} with timeStamp: {}",perfLog.getPerfLogId()
+                        ,perfLogTimeStamp);
+                ingestionEventQueueRepository.save(new IngestionEventQueueEntity(perfLog.getPerfLogId(),
+                        perfLogTimeStamp, PerfLogIngestionEvent.QUEUED,"no-error"));
+            }
+
+
         } catch (RuntimeException duplicateKeyException) {
             log.error("saving perfLog entry with Id {} failed", perfLog.getPerfLogId());
-            log.error("Duplicate perfLog entry with Id {} encountered for time stamp {}", perfLog.getPerfLogId(), perfLog.getTimeStamp());
+            log.error("Duplicate perfLog entry with Id {} encountered for time stamp {}"
+                        , perfLog.getPerfLogId(), perfLog.getTimeStamp());
             log.error(duplicateKeyException.getMessage());
         }
     }

@@ -59,9 +59,6 @@ public class StringToPerfLogConvertor implements Converter<String,PerfLog> {
                     StkString = StkString.substring(begin, end1);
                     StkString= StkString.concat("\"}]}]}]}");
                     callStack = objectMapper.readValue(StkString,new TypeReference<CallStack>(){});
-
-
-
                     log.info("Fixing json string - PASS");
                 } catch(JsonProcessingException e){
                     log.error("Fixing json string - FAIL");

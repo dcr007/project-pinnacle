@@ -8,22 +8,39 @@ server:
   port: 8851
   servlet:
     context-path: /svc/ingestion
-### Application ################################################################
-
+### Spring App properties ################################################################
 spring:
-#  kafka:
-#      bootstrap-servers: ${kafka_bootstrap_servers:localhost:29092}
-#      properties:
-#        sasl:
-#          jaas:
-#            config: org.apache.kafka.common.security.plain.PlainLoginModule required username=admin password=password;
-#          mechanism: PLAIN
-#        security:
-#          protocol: PLAINTEXT
+  application:
+    name: pinnacle-data-ingestion
+  ###### DB connection config ####################################################
+  dataSource:
+    url: jdbc:postgresql://localhost:5432/pinnacle-global-db
+    username: user
+    password: pwd123
+  ###### JPA properties ##########################################################
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # TODO: production should be validate only.
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        show_sql: false
+        se_sql_comments: false
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+          lob:
+            non_contextual_creation: true
+      javax:
+        persistence:
+          validation:
+            mode: none
+    open-in-view: false
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
   data:
+###### Spring app MONGO-DB properties#######################################
     mongodb:
       auto-index-creation: true
       authentication-database: admin
@@ -32,15 +49,9 @@ spring:
       database: perflogglobaldb
       port: 27017
       host: localhost
-  application:
-    name: pinnacle-data-ingestion
 
-  #  jackson:
-#    serialization:
-#      FAIL_ON_EMPTY_BEANS: false
-  jpa:
-    open-in-view: false
-###mongo collections#
+
+###MONGO-DB collections#######################################
 mongodb:
   collections:
     perf-logs:

@@ -20,11 +20,11 @@ services:
     tty: true   # 1 of 2 requirement for detached mode
     stdin_open: true # 2 of 2 requirement for detached mode
     ports:
-      - '5433:5433'
+      - '5432:5432'
     environment:
       - POSTGRES_PASSWORD=pwd123
       - POSTGRES_USER=user
-      - POSTGRES_DB=pinnacle-global-db-dev
+      - POSTGRES_DB=pinnacle-global-db
     networks:
       - backend
   pgadmin4:
