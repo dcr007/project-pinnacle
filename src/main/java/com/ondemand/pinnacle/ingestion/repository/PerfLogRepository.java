@@ -1,9 +1,10 @@
 package com.ondemand.pinnacle.ingestion.repository;
 
 import com.ondemand.pinnacle.ingestion.models.PerfLog;
-import com.ondemand.pinnacle.ingestion.models.SplunkPayLoad;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author Chandu D - i861116
@@ -13,4 +14,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PerfLogRepository extends
         MongoRepository<PerfLog,String> {
+    List<PerfLog> findByPerfLogIdIn(List<String> perfLogId);
 }

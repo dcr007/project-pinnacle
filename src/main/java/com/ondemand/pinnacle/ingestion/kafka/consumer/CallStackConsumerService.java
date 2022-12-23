@@ -1,6 +1,6 @@
 package com.ondemand.pinnacle.ingestion.kafka.consumer;
 
-import com.ondemand.pinnacle.analyzer.models.PerfLogIngestionEvent;
+import com.ondemand.pinnacle.analyzer.models.IngestionEventStatus;
 import com.ondemand.pinnacle.ingestion.entities.IngestionEventQueueEntity;
 import com.ondemand.pinnacle.ingestion.models.CallStack;
 import com.ondemand.pinnacle.ingestion.models.PerfLog;
@@ -103,7 +103,7 @@ public class CallStackConsumerService {
                 log.info("recording data ingestion event for perfLogId {} with timeStamp: {}",perfLog.getPerfLogId()
                         ,perfLogTimeStamp);
                 ingestionEventQueueRepository.save(new IngestionEventQueueEntity(perfLog.getPerfLogId(),
-                        perfLogTimeStamp, PerfLogIngestionEvent.QUEUED,"no-error"));
+                        perfLogTimeStamp, IngestionEventStatus.QUEUED,"no-error"));
             }
 
 

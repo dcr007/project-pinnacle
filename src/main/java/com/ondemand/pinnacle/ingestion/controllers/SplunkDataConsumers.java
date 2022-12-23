@@ -2,13 +2,16 @@ package com.ondemand.pinnacle.ingestion.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.ondemand.pinnacle.analyzer.models.AnalysisResult;
+import com.ondemand.pinnacle.analyzer.models.IngestionEventStatus;
+import com.ondemand.pinnacle.ingestion.entities.IngestionEventQueueEntity;
 import com.ondemand.pinnacle.ingestion.models.CallStack;
 import com.ondemand.pinnacle.analyzer.models.StackClassification;
 import com.ondemand.pinnacle.ingestion.models.PerfLog;
 import com.ondemand.pinnacle.ingestion.models.SplunkPayLoad;
 import com.ondemand.pinnacle.analyzer.models.enums.StackCategory;
 import com.ondemand.pinnacle.ingestion.kafka.producer.Producer;
+import com.ondemand.pinnacle.ingestion.repository.IngestionEventQueueRepository;
+import com.ondemand.pinnacle.ingestion.repository.PerfLogRepository;
 import com.ondemand.pinnacle.ingestion.services.CallStackService;
 import com.ondemand.pinnacle.analyzer.services.FetchPerfLogDataService;
 import com.ondemand.pinnacle.analyzer.services.PerfLogAnalyzerService;
@@ -22,9 +25,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 /**
  * @author Chandu D - i861116
@@ -49,6 +54,11 @@ public class SplunkDataConsumers {
     @Autowired
     private CallStackService callStackService;
 
+    @Autowired
+    IngestionEventQueueRepository ingestionEventQueueRepository;
+
+    @Autowired
+    PerfLogRepository perfLogRepository;
 
     @PostMapping("/sendToDwrQueue")
     public HttpStatus sendSplunkPayLoadToQueue(@RequestBody SplunkPayLoad splunkPayLoad)
@@ -111,6 +121,22 @@ public class SplunkDataConsumers {
         HttpStatus status =
                 callStackService.save(callStack);
         return status;
+    }
+
+    @GetMapping("/getPerfLogsLogs/{status}")
+    public ResponseEntity<List<PerfLog>> findByEventLogStatus(@PathVariable IngestionEventStatus status){
+//        TODO: fetch perflog id's and timestamp with status QUEUED from
+        List<IngestionEventQueueEntity> logsInQueuedStatus = ingestionEventQueueRepository
+                                                            .findByIngestionEventStatus(status);
+        List<String> perfLogIds = logsInQueuedStatus.stream()
+                .map(IngestionEventQueueEntity::getPerfLogId).collect(Collectors.toList()) ;
+        log.info("# perfLogIds fetched {}",perfLogIds.size());
+        log.info("perfLogIds fetched {}",perfLogIds);
+
+        List<PerfLog> perfLogsToBeProcessed = perfLogRepository.findByPerfLogIdIn(perfLogIds);
+
+
+        return ResponseEntity.ok(perfLogsToBeProcessed);
     }
 
 

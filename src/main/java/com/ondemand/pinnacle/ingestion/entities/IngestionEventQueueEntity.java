@@ -1,6 +1,6 @@
 package com.ondemand.pinnacle.ingestion.entities;
 
-import com.ondemand.pinnacle.analyzer.models.PerfLogIngestionEvent;
+import com.ondemand.pinnacle.analyzer.models.IngestionEventStatus;
 import lombok.*;
 
 import javax.persistence.*;
@@ -39,7 +39,7 @@ public class IngestionEventQueueEntity {
     @Column(nullable = false, name = "perf_log_ingestion_event")
     @Enumerated(EnumType.STRING)
     @Getter @Setter
-    private PerfLogIngestionEvent perfLogIngestionEvent = PerfLogIngestionEvent.NA;
+    private IngestionEventStatus ingestionEventStatus = IngestionEventStatus.NA;
 
     @Column(name="perf_log_ingestion_event_error")
     @Getter @Setter
@@ -60,10 +60,10 @@ public class IngestionEventQueueEntity {
     }
 
 
-    public IngestionEventQueueEntity(String perfLogId, LocalDateTime perfLogTs, PerfLogIngestionEvent perfLogIngestionEvent, String perfLogIngestionEventError) {
+    public IngestionEventQueueEntity(String perfLogId, LocalDateTime perfLogTs, IngestionEventStatus perfLogIngestionEvent, String perfLogIngestionEventError) {
         this.perfLogId = perfLogId;
         this.perfLogTs = perfLogTs;
-        this.perfLogIngestionEvent = perfLogIngestionEvent;
+        this.ingestionEventStatus = perfLogIngestionEvent;
         this.perfLogIngestionEventError = perfLogIngestionEventError;
     }
 }

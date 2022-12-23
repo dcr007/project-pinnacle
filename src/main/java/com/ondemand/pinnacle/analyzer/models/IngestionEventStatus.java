@@ -5,6 +5,6 @@ package com.ondemand.pinnacle.analyzer.models;
  * @created 21/12/2022 - 2:23 PM
  * @description
  */
-public enum PerfLogIngestionEvent {
+public enum IngestionEventStatus {
     NA, QUEUED, PROCESSING,COMPLETE, ERROR
 }

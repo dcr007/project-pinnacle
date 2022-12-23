@@ -20,7 +20,7 @@ spring:
   ###### JPA properties ##########################################################
   jpa:
     hibernate:
-      ddl-auto: create-drop  # TODO: production should be validate only.
+      ddl-auto: update  # TODO: production should be validate only.
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
