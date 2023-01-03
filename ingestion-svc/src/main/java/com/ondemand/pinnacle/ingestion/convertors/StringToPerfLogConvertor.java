@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 @Component
-public class StringToPerfLogConvertor implements Converter<String,PerfLog> {
+public class StringToPerfLogConvertor implements Converter<String, PerfLog> {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private NextSequenceService nextSequenceIdGeneratorService;

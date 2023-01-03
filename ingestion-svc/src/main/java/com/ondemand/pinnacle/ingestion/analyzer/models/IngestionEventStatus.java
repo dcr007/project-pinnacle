@@ -6,5 +6,5 @@ package com.ondemand.pinnacle.ingestion.analyzer.models;
  * @description
  */
 public enum IngestionEventStatus {
-    NA, QUEUED, PROCESSING,COMPLETE, ERROR
+    NA, QUEUED, PROCESSING,COMPLETE, ERROR,NEEDS_REFRESH,DELETED,SYNCED
 }

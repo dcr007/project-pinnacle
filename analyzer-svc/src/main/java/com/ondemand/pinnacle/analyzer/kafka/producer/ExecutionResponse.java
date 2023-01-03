@@ -1,4 +1,4 @@
-package com.ondemand.pinnacle.ingestion.kafka.producer;
+package com.ondemand.pinnacle.analyzer.kafka.producer;
 
 /**
  * @author Chandu D - i861116
