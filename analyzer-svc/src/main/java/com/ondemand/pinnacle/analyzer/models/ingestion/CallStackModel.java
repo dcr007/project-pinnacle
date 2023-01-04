@@ -17,7 +17,7 @@ import java.util.List;
 @ToString
 @Data
 public class CallStackModel implements Serializable {
-    private static final long serialVersionUID = -1698763054778439285L;
+    private static final long serialVersionUID = -1698763054778439215L;
 //    @Id
 //    @JsonAlias("_id")
     String callStackId;

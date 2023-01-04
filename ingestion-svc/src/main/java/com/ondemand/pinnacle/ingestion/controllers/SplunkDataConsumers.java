@@ -123,9 +123,15 @@ public class SplunkDataConsumers {
         return status;
     }
 
-    @GetMapping("/getPerfLogsLogs/{status}")
+    /**
+     * @description  - 1. get all PerflogId's from ingestion-event-queue
+     *                 2. for all collected perflogId's get their corresponding perflogs from NoSQL.
+     * @param status
+     * @return
+     */
+    @GetMapping("/findByIngestionSvcStatus/{status}")
     public ResponseEntity<List<PerfLog>> findByEventLogStatus(@PathVariable IngestionEventStatus status){
-//        TODO: fetch perflog id's and timestamp with status QUEUED from
+
         List<IngestionEventQueueEntity> logsInQueuedStatus = ingestionEventQueueRepository
                                                             .findByIngestionEventStatus(status);
         List<String> perfLogIds = logsInQueuedStatus.stream()

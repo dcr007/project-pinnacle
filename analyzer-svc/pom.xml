@@ -9,8 +9,8 @@
     <artifactId>analyzer-svc</artifactId>
     <name>analyzer-svc</name>
     <description>service to analyze splunk data</description>
-
     <packaging>jar</packaging>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

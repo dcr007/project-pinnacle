@@ -39,7 +39,7 @@ public class IngestionEventQueueEntity {
     @Column(nullable = false, name = "perf_log_ingestion_event")
     @Enumerated(EnumType.STRING)
     @Getter @Setter
-    private IngestionEventStatus ingestionEventStatus = IngestionEventStatus.NA;
+    private IngestionEventStatus ingestionEventStatus = IngestionEventStatus.NON_OPERATIONAL;
 
     @Column(name="perf_log_ingestion_event_error")
     @Getter @Setter
