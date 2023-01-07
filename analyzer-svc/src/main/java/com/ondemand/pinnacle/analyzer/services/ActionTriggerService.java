@@ -22,23 +22,15 @@ import java.util.stream.Stream;
 public class ActionTriggerService {
     @Autowired
     PinnacleIngestionQueryService ingestionQueryService;
+
     @Async("service-td")
-    public void triggerQueuedAfterSleep(){
+    public void triggerQueuedAfterSleep() {
         this.delay(2);
         this.triggerQueued(false);
     }
 
-    private void delay(int seconds) {
-        try{
-            Thread.sleep(seconds*1000);
-        }catch (InterruptedException e){
-            log.error("Error in thread sleep");
-            e.printStackTrace();
-        }
-    }
-
-    public Optional<List<PerfLogModel>> triggerQueued(boolean notify){
-        synchronized (this){
+    public Optional<List<PerfLogModel>> triggerQueued(boolean notify) {
+        synchronized (this) {
 //            1. collect all Logs in Queued state
             PerfLogModel[] perfLogModels = ingestionQueryService
                     .findByIngestionStatus(IngestionEventStatus.QUEUED);
@@ -46,16 +38,16 @@ public class ActionTriggerService {
                     Stream.of(perfLogModels).collect(Collectors.toList());
 
 //            2. if nothing is collected , nothing to create
-            if(perfLogModelsInQueuedStatus.isEmpty()) {
+            if (perfLogModelsInQueuedStatus.isEmpty()) {
                 log.info("No perf-logs in {} state collected from ingestion service. " +
                         "Exiting", IngestionEventStatus.QUEUED);
                 return Optional.of(perfLogModelsInQueuedStatus);
             }
 //           3. if perflogs collected, then operate on them
-                log.info("{} Perflogs entities colected with ids: {}",perfLogModelsInQueuedStatus.size(),
-                        perfLogModelsInQueuedStatus.stream().map(PerfLogModel::getPerfLogId)
-                                .collect(Collectors.toList()));
-                return Optional.of(perfLogModelsInQueuedStatus);
+            log.info("{} Perflogs entities colected with ids: {}", perfLogModelsInQueuedStatus.size(),
+                    perfLogModelsInQueuedStatus.stream().map(PerfLogModel::getPerfLogId)
+                            .collect(Collectors.toList()));
+            return Optional.of(perfLogModelsInQueuedStatus);
 
 //          TODO:4: update the ingestion status to PROCESSING.
 
@@ -64,11 +56,15 @@ public class ActionTriggerService {
 
 //          TODO:6: update perflog IngestionStatus to COMPLETE in the ingestion service.
 
+        }
+    }
 
-
-
-
-
+    private void delay(int seconds) {
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException e) {
+            log.error("Error in thread sleep");
+            e.printStackTrace();
         }
     }
 
