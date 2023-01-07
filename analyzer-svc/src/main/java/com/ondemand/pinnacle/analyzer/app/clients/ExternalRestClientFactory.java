@@ -1,4 +1,4 @@
-package com.ondemand.pinnacle.analyzer.app;
+package com.ondemand.pinnacle.analyzer.app.clients;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import com.ondemand.pinnacle.analyzer.app.RestClient.RestClientBuilder;
+import com.ondemand.pinnacle.analyzer.app.clients.RestClient.RestClientBuilder;
 import org.springframework.http.HttpHeaders;
 import java.util.Arrays;
 

@@ -49,21 +49,22 @@ spring:
       database: perflogglobaldb
       port: 27017
       host: localhost
-
-
 ###MONGO-DB collections#######################################
 mongodb:
   collections:
     perf-logs:
       dwr-suffix: dwr
-
-
 ### Kafka ################################################################
 kafka:
     bootstrapAddress : localhost:9092 # kafka bootstrap server
     groupId : perf-log-api-consumer
     jaas : org.apache.kafka.common.security.plain.PlainLoginModule required username=admin password=password;
     security: PLAINTEXT
+### Constants ##################################################################
+constants:
+  services:
+    gateway:
+      url: http://localhost:8881
 ### Actuator    ################################################################
 management:
   endpoint:

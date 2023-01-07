@@ -1,7 +1,7 @@
 package com.ondemand.pinnacle.analyzer.services;
 
-import com.ondemand.pinnacle.analyzer.app.ExternalRestClientFactory;
-import com.ondemand.pinnacle.analyzer.models.IngestionEventStatus;
+import com.ondemand.pinnacle.analyzer.app.clients.ExternalRestClientFactory;
+import com.ondemand.pinnacle.analyzer.app.clients.constants.ingestion.IngestionEventStatus;
 import com.ondemand.pinnacle.analyzer.models.ingestion.PerfLogModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+
 @Service
 @Slf4j
-public class PinnacleIngestionQuerryService {
+public class PinnacleIngestionQueryService {
 
     @Autowired
     private ExternalRestClientFactory restClientFactory;
@@ -23,6 +25,8 @@ public class PinnacleIngestionQuerryService {
     public PerfLogModel[] findByIngestionStatus(IngestionEventStatus status){
 //        TODO: fetch all perflogs for the given status
         log.info("Service request to collect  perf-logs in status {}",status);
+        log.info(this.url+this.ingestionQueryApi +
+                this.findByIngestionStatusApi + "/"+status);
 
         ResponseEntity<PerfLogModel[]> response = restClientFactory
                 .newInternalRestClient(this.url+this.ingestionQueryApi +
@@ -32,7 +36,7 @@ public class PinnacleIngestionQuerryService {
         log.info("{} records were collected.", response.getBody()!=null?
                 response.getBody().length : 0);
 
-        log.debug("Response body:{} ", response.getBody());
+        log.debug("Response body:{} ", Arrays.toString(response.getBody()));
         return  response.getBody();
     }
 

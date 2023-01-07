@@ -1,6 +1,7 @@
 package com.ondemand.pinnacle.analyzer.models;
 
-import com.ondemand.pinnacle.analyzer.models.PerfLog;
+
+import com.ondemand.pinnacle.analyzer.models.ingestion.PerfLogModel;
 
 /**
  * @author Chandu D - i861116
@@ -9,5 +10,5 @@ import com.ondemand.pinnacle.analyzer.models.PerfLog;
  */
 public interface PerfLogSummary<O> {
 
-    public O generateSummary(PerfLog perfLog);
+    public O generateSummary(PerfLogModel perfLog);
 }

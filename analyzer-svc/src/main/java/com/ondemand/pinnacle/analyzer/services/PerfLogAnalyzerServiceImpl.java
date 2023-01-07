@@ -6,8 +6,8 @@ import com.ondemand.pinnacle.analyzer.models.DwrPerfLogSummary;
 import com.ondemand.pinnacle.analyzer.models.DwrRcaSummary;
 import com.ondemand.pinnacle.analyzer.models.StackClassification;
 import com.ondemand.pinnacle.analyzer.models.enums.StackCategory;
-import com.ondemand.pinnacle.analyzer.models.CallStack;
-import com.ondemand.pinnacle.analyzer.models.PerfLog;
+import com.ondemand.pinnacle.analyzer.models.ingestion.CallStackModel;
+import com.ondemand.pinnacle.analyzer.models.ingestion.PerfLogModel;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service("analyzePerfLogServiceImpl")
 public class PerfLogAnalyzerServiceImpl implements
-        PerfLogAnalyzerService<PerfLog, DwrPerfLogSummary, DwrAnalysisResult> {
+        PerfLogAnalyzerService<PerfLogModel, DwrPerfLogSummary, DwrAnalysisResult> {
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public DwrAnalysisResult generateReport(PerfLog perfLog) {
+    public DwrAnalysisResult generateReport(PerfLogModel perfLog) {
 
         log.info("Analysing perflog {}", perfLog.toString());
 
@@ -56,24 +56,24 @@ public class PerfLogAnalyzerServiceImpl implements
     }
 
     @Override
-    public DwrPerfLogSummary getLogSummary(PerfLog perfLog) {
+    public DwrPerfLogSummary getLogSummary(PerfLogModel perfLog) {
         return DwrPerfLogSummary.builder().build().generateSummary(perfLog);
     }
 
     @Override
-    public DwrRcaSummary getRcaSummary(PerfLog perfLog) {
+    public DwrRcaSummary getRcaSummary(PerfLogModel perfLog) {
         Map<StackCategory, ArrayList<StackClassification>> analyzedCallStack = getCallStackAnalysis(perfLog);
         return DwrRcaSummary.builder().callStackBreakDown(analyzedCallStack).build();
     }
 
     @Override
-    public Map<StackCategory, ArrayList<StackClassification>> getCallStackAnalysis(PerfLog perfLog) {
+    public Map<StackCategory, ArrayList<StackClassification>> getCallStackAnalysis(PerfLogModel perfLog) {
 
         return analyzeCallStack(perfLog.getCallStack(), new HashMap<>());
     }
 
     @Override
-    public Map<StackCategory, ArrayList<StackClassification>> analyzeCallStack(CallStack stack, Map<StackCategory,
+    public Map<StackCategory, ArrayList<StackClassification>> analyzeCallStack(CallStackModel stack, Map<StackCategory,
             ArrayList<StackClassification>> classStackMap) {
 
         if (stack.getCallNode().contains(".dwr")) {
@@ -144,9 +144,9 @@ public class PerfLogAnalyzerServiceImpl implements
 
         }
 
-        List<CallStack> callStacks = stack.getSub();
+        List<CallStackModel> callStacks = stack.getSub();
         if (callStacks != null) {
-            for (CallStack stk : callStacks) {
+            for (CallStackModel stk : callStacks) {
                 log.info("executing call stack {}", stk.toString());
                 analyzeCallStack(stk, classStackMap);
             }
@@ -156,7 +156,7 @@ public class PerfLogAnalyzerServiceImpl implements
 
     }
 
-    private StackClassification buildClassifiedStack(CallStack stack, StackCategory service) {
+    private StackClassification buildClassifiedStack(CallStackModel stack, StackCategory service) {
         return new StackClassification()
                 .toBuilder()
                 .qualifierName(stack.getCallNode())

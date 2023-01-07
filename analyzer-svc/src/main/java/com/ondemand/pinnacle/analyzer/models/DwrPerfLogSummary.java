@@ -2,7 +2,7 @@ package com.ondemand.pinnacle.analyzer.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.ondemand.pinnacle.analyzer.models.PerfLog;
+import com.ondemand.pinnacle.analyzer.models.ingestion.PerfLogModel;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -18,11 +18,11 @@ import lombok.extern.jackson.Jacksonized;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DwrPerfLogSummary implements PerfLogSummary<DwrPerfLogSummary>{
-    PerfLog observationSummary;
+    PerfLogModel observationSummary;
     @Override
-    public DwrPerfLogSummary generateSummary(PerfLog perfLog){
+    public DwrPerfLogSummary generateSummary(PerfLogModel perfLog){
 
-        PerfLog dwrPerfLog = PerfLog.builder()
+        PerfLogModel dwrPerfLog = PerfLogModel.builder()
                                     .perfLogId(perfLog.getPerfLogId())
                                     .timeStamp(perfLog.getTimeStamp())
                                     .perfLevel(perfLog.getPerfLevel())

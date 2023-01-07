@@ -1,9 +1,7 @@
 package com.ondemand.pinnacle.analyzer.models.ingestion;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
@@ -16,8 +14,10 @@ import java.io.Serializable;
  */
 
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 @Data
+@Builder(toBuilder = true)
 public class PerfLogModel implements Serializable {
 
     private static final long serialVersionUID = -5238163054776439281L;

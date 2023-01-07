@@ -1,6 +1,5 @@
-package com.ondemand.pinnacle.analyzer.app;
+package com.ondemand.pinnacle.analyzer.app.clients;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
