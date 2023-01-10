@@ -40,7 +40,7 @@ public final class RestClient implements RestClientService{
     }
 
     @Override
-    public <T> ResponseEntity<T> doPut(Class<T> clz, T body) {
+    public <T,R> ResponseEntity<R> doPut(Class<R> clz, T body) {
         HttpEntity<T> httpEntity = new HttpEntity<T>(body, this.headers);
         return this.exchange(this.restTemplate,this.uri, HttpMethod.PUT, httpEntity, clz);
     }
