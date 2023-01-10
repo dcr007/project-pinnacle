@@ -9,6 +9,9 @@ import org.springframework.web.client.RestTemplate;
 import com.ondemand.pinnacle.analyzer.app.clients.RestClient.RestClientBuilder;
 import org.springframework.http.HttpHeaders;
 import java.util.Arrays;
+import java.util.List;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * @author Chandu D - i861116
@@ -31,6 +34,7 @@ public class ExternalRestClientFactory {
     public RestClientService newRestClient(String uri, HttpHeaders headers){
         return  this.getRestClientBuilder().restTemplate(this.restTemplate)
                 .uri(uri)
+                .headers(headers)
                 .build();
     }
     public RestClientBuilder getRestClientBuilder(){
@@ -62,8 +66,8 @@ public class ExternalRestClientFactory {
     // TODO: to implement authentication using serviceToken
     public RestClientService newInternalRestClient(String uri) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.valueOf(APPLICATION_JSON_VALUE));
+        headers.setAccept(List.of(MediaType.valueOf(APPLICATION_JSON_VALUE)));
 //        headers.setBearerAuth(utils.getServiceToken());
 
         return this.newRestClient(uri, headers);

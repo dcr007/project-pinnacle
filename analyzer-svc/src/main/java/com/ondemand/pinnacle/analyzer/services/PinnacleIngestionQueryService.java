@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -18,14 +19,17 @@ public class PinnacleIngestionQueryService {
     @Autowired
     private ExternalRestClientFactory restClientFactory;
     private final String ingestionQueryApi ="/svc/ingestion/rest/v1/api/internal/query";
+    private final String ingestionCommandApi ="/svc/ingestion/rest/v1/api/internal/command";
     private final String findByIngestionStatusApi= "/findByIngestionSvcStatus";
+
+    private final String  ingestionUpdateApi = "/updateIngestionStatus";
     @Value("${constants.services.gateway.url}")
     private String url;
 
     public PerfLogModel[] findByIngestionStatus(IngestionEventStatus status){
-//        TODO: fetch all perflogs for the given status
+
         log.info("Service request to collect  perf-logs in status {}",status);
-        log.info(this.url+this.ingestionQueryApi +
+        log.info("Querying with internal ingestion service call to: {}",this.url+this.ingestionQueryApi +
                 this.findByIngestionStatusApi + "/"+status);
 
         ResponseEntity<PerfLogModel[]> response = restClientFactory
@@ -36,9 +40,17 @@ public class PinnacleIngestionQueryService {
         log.info("{} records were collected.", response.getBody()!=null?
                 response.getBody().length : 0);
 
-        log.debug("Response body:{} ", Arrays.toString(response.getBody()));
+//        log.debug("Response body:{} ", Arrays.toString(response.getBody()));
         return  response.getBody();
     }
 
 
+    public void updateIngestionStatus(IngestionEventStatus status, List<String> perfLogIds) {
+        log.info("Service request to update the IngestionEvent status to {} for perLogIds {}"
+                ,status,perfLogIds);
+
+
+        ResponseEntity<String> res = restClientFactory.newInternalRestClient
+                (url+ingestionCommandApi+ingestionUpdateApi+"/"+status).doPut(String.class,perfLogIds);
+    }
 }

@@ -29,6 +29,7 @@ public final class RestClient implements RestClientService{
     @Override
     public <T> ResponseEntity<T> doGet(Class<T> clz) {
         HttpEntity<T> httpEntity = new HttpEntity<T>(this.headers);
+
         return this.exchange(this.restTemplate,this.uri, HttpMethod.GET,httpEntity,clz);
     }
 

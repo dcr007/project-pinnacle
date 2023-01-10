@@ -42,7 +42,7 @@ public interface RestClientService {
      * @param body - Serializable POJO or even a JSON String.
      * @return ResponseEntity<T> for clz Type provided
      */
-    <T> ResponseEntity<T> doPut(Class<T> clz, T body);
+    <T,R> ResponseEntity<R> doPut(Class<R> clz, T body);
 
     /**
      * @description wrapper method for exchange calls;

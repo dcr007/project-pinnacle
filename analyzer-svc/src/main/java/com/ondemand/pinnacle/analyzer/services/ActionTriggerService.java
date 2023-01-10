@@ -44,17 +44,19 @@ public class ActionTriggerService {
                 return Optional.of(perfLogModelsInQueuedStatus);
             }
 //           3. if perflogs collected, then operate on them
+            List<String> perfLogIds = perfLogModelsInQueuedStatus.stream().map(PerfLogModel::getPerfLogId)
+                    .collect(Collectors.toList());
+
             log.info("{} Perflogs entities colected with ids: {}", perfLogModelsInQueuedStatus.size(),
-                    perfLogModelsInQueuedStatus.stream().map(PerfLogModel::getPerfLogId)
-                            .collect(Collectors.toList()));
-            return Optional.of(perfLogModelsInQueuedStatus);
+                    perfLogIds);
 
 //          TODO:4: update the ingestion status to PROCESSING.
-
+            ingestionQueryService.updateIngestionStatus(IngestionEventStatus.PROCESSING,perfLogIds);
 
 //          TODO 5: filter the perflogs with anomalies and update IngestionStatus to ANOMALIES_DETECTED_TRUE
 
 //          TODO:6: update perflog IngestionStatus to COMPLETE in the ingestion service.
+            return Optional.of(perfLogModelsInQueuedStatus);
 
         }
     }

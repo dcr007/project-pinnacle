@@ -7,11 +7,11 @@
 server:
   port: 8852
   servlet:
-    context-path: /svc/ingestion
+    context-path: /svc/analyzer
 ### Spring App properties ################################################################
 spring:
   application:
-    name: pinnacle-data-ingestion
+    name: pinnacle-data-analyzer
   ###### DB connection config ####################################################
   dataSource:
     url: jdbc:postgresql://localhost:5432/pinnacle-global-db

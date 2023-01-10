@@ -41,7 +41,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "${app-security.endpoint.secure}/internal",
 consumes = MediaType.APPLICATION_JSON_VALUE,
-produces = MediaType.APPLICATION_JSON_VALUE)
+produces = MediaType.APPLICATION_JSON_VALUE
+ )
 @Api(tags = "Internal Queries",value = "Query controller for ingestion svc.")
 @Slf4j
 @AllArgsConstructor
@@ -61,7 +62,7 @@ public class IngestionQueryController {
      */
     @GetMapping("/query/findByIngestionSvcStatus/{status}")
     public ResponseEntity<List<PerfLog>> findByEventLogStatus(@PathVariable IngestionEventStatus status){
-
+        log.info("Executing controller call to `findByIngestionSvcStatus` for status {}",status);
         List<IngestionEventQueueEntity> logsInQueuedStatus = ingestionEventQueueRepository
                                                             .findByIngestionEventStatus(status);
         List<String> perfLogIds = logsInQueuedStatus.stream()

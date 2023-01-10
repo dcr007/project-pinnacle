@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping(
-        value = "/rest/v1",
-        consumes = MediaType.APPLICATION_JSON_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE
+        value = "/rest/v1"
+//        consumes = MediaType.APPLICATION_JSON_VALUE,
+//        produces = MediaType.APPLICATION_JSON_VALUE
 )
 public class ActionTriggerController {
     @Autowired

@@ -20,7 +20,7 @@ import java.io.Serializable;
 @Builder(toBuilder = true)
 public class PerfLogModel implements Serializable {
 
-    private static final long serialVersionUID = -5238163054776439281L;
+    private static final long serialVersionUID = -5238163054776437281L;
     String perfLogId;
     @JsonAlias("_id")
     @Id
