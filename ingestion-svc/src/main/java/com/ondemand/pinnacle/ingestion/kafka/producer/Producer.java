@@ -85,6 +85,7 @@ public final class Producer {
 
         future.get(1L,TimeUnit.SECONDS);
 
+        //  This will check producer result asynchronously to avoid thread blocking
         future.addCallback(new ListenableFutureCallback<SendResult<String, SplunkPayLoad>>() {
             @Override
             public void onFailure(@NotNull Throwable throwable) {

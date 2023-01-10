@@ -3,6 +3,9 @@ package com.ondemand.pinnacle.ingestion.repository;
 import com.ondemand.pinnacle.ingestion.analyzer.models.IngestionEventStatus;
 import com.ondemand.pinnacle.ingestion.entities.IngestionEventQueueEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,5 +19,9 @@ import java.util.List;
 public interface IngestionEventQueueRepository extends JpaRepository<IngestionEventQueueEntity,Long> {
 
     List<IngestionEventQueueEntity> findByIngestionEventStatus(IngestionEventStatus ingestionEventStatus);
+
+    @Modifying
+    @Query("update IngestionEventQueueEntity IEQ set IEQ.ingestionEventStatus = :status where IEQ.id = :id")
+    void updateIngestionEventStatus(@Param(value = "perfLogId") String perfLogId, @Param(value = "status") String status);
 
 }

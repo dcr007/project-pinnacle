@@ -1,36 +1,20 @@
 package com.ondemand.pinnacle.ingestion.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.ondemand.pinnacle.ingestion.analyzer.models.IngestionEventStatus;
-import com.ondemand.pinnacle.ingestion.analyzer.models.StackClassification;
-import com.ondemand.pinnacle.ingestion.analyzer.models.enums.StackCategory;
-import com.ondemand.pinnacle.ingestion.analyzer.services.FetchPerfLogDataService;
-import com.ondemand.pinnacle.ingestion.analyzer.services.PerfLogAnalyzerService;
 import com.ondemand.pinnacle.ingestion.entities.IngestionEventQueueEntity;
-import com.ondemand.pinnacle.ingestion.kafka.producer.Producer;
-import com.ondemand.pinnacle.ingestion.models.CallStack;
 import com.ondemand.pinnacle.ingestion.models.PerfLog;
-import com.ondemand.pinnacle.ingestion.models.SplunkPayLoad;
 import com.ondemand.pinnacle.ingestion.repository.IngestionEventQueueRepository;
 import com.ondemand.pinnacle.ingestion.repository.PerfLogRepository;
-import com.ondemand.pinnacle.ingestion.services.CallStackService;
 import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 /**
@@ -74,6 +58,19 @@ public class IngestionQueryController {
 
 
         return ResponseEntity.ok(perfLogsToBeProcessed);
+    }
+
+    @PostMapping("/command/updateIngestionStatus/{status}")
+    public ResponseEntity<?> updateIngestionEventStatus(@PathVariable  IngestionEventStatus status,
+                                                        @RequestBody @NotNull List<String> perfLogIds){
+        log.info("Executing controller call to `updateIngestionEventStatus` to status {}",status);
+
+        perfLogIds.stream().forEach(perfLogId -> ingestionEventQueueRepository.updateIngestionEventStatus(perfLogId,status.name()));
+
+        log.info("Status updated successfully");
+        return ResponseEntity.ok().build();
+
+
     }
 
 
