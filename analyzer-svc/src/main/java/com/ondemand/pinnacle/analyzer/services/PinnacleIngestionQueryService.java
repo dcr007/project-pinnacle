@@ -22,7 +22,7 @@ public class PinnacleIngestionQueryService {
     private final String ingestionCommandApi ="/svc/ingestion/rest/v1/api/internal/command";
     private final String findByIngestionStatusApi= "/findByIngestionSvcStatus";
 
-    private final String  ingestionUpdateApi = "/updateIngestionStatus";
+    private final String  ingestionUpdateApi = "/updateIngestionStatusTo";
     @Value("${constants.services.gateway.url}")
     private String url;
 
@@ -51,6 +51,7 @@ public class PinnacleIngestionQueryService {
 
 
         ResponseEntity<String> res = restClientFactory.newInternalRestClient
-                (url+ingestionCommandApi+ingestionUpdateApi+"/"+status).doPut(String.class,perfLogIds);
+                (url+ingestionCommandApi+ingestionUpdateApi+"/"+status)
+                .doPut(String.class,perfLogIds);
     }
 }

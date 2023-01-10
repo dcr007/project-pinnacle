@@ -60,12 +60,13 @@ public class IngestionQueryController {
         return ResponseEntity.ok(perfLogsToBeProcessed);
     }
 
-    @PostMapping("/command/updateIngestionStatus/{status}")
+    @PutMapping("/command/updateIngestionStatusTo/{status}")
     public ResponseEntity<?> updateIngestionEventStatus(@PathVariable  IngestionEventStatus status,
                                                         @RequestBody @NotNull List<String> perfLogIds){
         log.info("Executing controller call to `updateIngestionEventStatus` to status {}",status);
 
-        perfLogIds.stream().forEach(perfLogId -> ingestionEventQueueRepository.updateIngestionEventStatus(perfLogId,status.name()));
+        perfLogIds.forEach(perfLogId ->
+                ingestionEventQueueRepository.updateIngestionEventStatus(perfLogId,status));
 
         log.info("Status updated successfully");
         return ResponseEntity.ok().build();
