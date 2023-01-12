@@ -18,8 +18,12 @@
 | 11/05/2022 | V0.12 | Dowlathram, Chanduram <chanduram.dowlathram@sap.com>| 1. Included Functional Requirements on  Data Ingestion Service |
 
 ## Overview
-This initiative is to build a Observability platform that will focus on error detection and identification for the currently identified areas of 
-performance degradation . This will help us analyze the behavior pattern of various application components and services and how it scales over time for various production tenants and their configurations.
+This initiative is to build an BizX data observability platform that will focus on error detection 
+and identification for the identified areas of performance patterns .
+
+This will help us analyze the behavior pattern of various  BizX modules and application 
+components / services and how it scales over time for various production tenants and their 
+configurations.
 
 ### Known Problem Areas
 
