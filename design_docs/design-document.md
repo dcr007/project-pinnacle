@@ -35,6 +35,10 @@ The process of Root-cause analysis  involves:
 
 - Identification  and reporting similar errors and exceptions across various modules and services are currently manual , time-consuming and repetitive process.
 
+### Anomaly Detection Architecture
+
+![](archDiagram/high-level-architecture.png)
+
 ### Identified Use-Cases
 
 These are some the use-cases identified as candidates to start with :
