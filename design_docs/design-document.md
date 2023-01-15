@@ -4,6 +4,7 @@
 * [Detailed Design Document](#detailed-design-document)
   * [Overview](#overview)
     * [Known Problem Areas](#known-problem-areas)
+    * [Anomaly Detection Architecture](#anomaly-detection-architecture)
     * [Identified Use-Cases](#identified-use-cases)
   * [Functional Requirements](#functional-requirements)
     * [Data Ingestion Service](#data-ingestion-service)
