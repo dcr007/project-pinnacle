@@ -6,5 +6,5 @@ package com.ondemand.pinnacle.analyzer.api.constants;
  * @description
  */
 public enum RequestTriggerType {
-    ALL, INITIALIZE, REFRESH, DELETE, ARCHIVE, INITIALIZE_AND_NOTIFY;
+    ALL, INITIALIZE, ANALYZE,REFRESH, DELETE, ARCHIVE, INITIALIZE_AND_NOTIFY;
 }

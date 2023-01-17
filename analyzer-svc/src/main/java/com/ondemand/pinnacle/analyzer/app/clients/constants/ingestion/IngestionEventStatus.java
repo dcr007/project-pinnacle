@@ -8,7 +8,7 @@ package com.ondemand.pinnacle.analyzer.app.clients.constants.ingestion;
 public enum IngestionEventStatus {
     NA,
     QUEUED,
-    PROCESSING,
+    ANALYZING,
     ANOMALIES_DETECTED_TRUE,
     ANOMALIES_DETECTED_FALSE,
     COMPLETE,

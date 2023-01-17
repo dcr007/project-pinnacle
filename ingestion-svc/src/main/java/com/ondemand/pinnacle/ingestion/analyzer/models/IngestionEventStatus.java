@@ -15,7 +15,7 @@ import lombok.Getter;
 public enum IngestionEventStatus {
     NON_OPERATIONAL,
     QUEUED,
-    PROCESSING,
+    ANALYZING,
     COMPLETE,
     ERROR,
     NEEDS_REFRESH,

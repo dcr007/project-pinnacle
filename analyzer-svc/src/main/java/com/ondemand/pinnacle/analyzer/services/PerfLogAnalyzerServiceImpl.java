@@ -77,7 +77,7 @@ public class PerfLogAnalyzerServiceImpl implements
             ArrayList<StackClassification>> classStackMap) {
 
         if (stack.getCallNode().contains(".dwr")) {
-            log.info("Call node :{}", stack.getCallNode());
+            log.info("parsing call node :{}", stack.getCallNode());
 
 
             StackClassification dwrStack = buildClassifiedStack(stack, StackCategory.DWR);
@@ -122,7 +122,8 @@ public class PerfLogAnalyzerServiceImpl implements
                 stackClassificationList = (classStackMap.get(StackCategory.JDBC));
                 stackClassificationList.add(segregatedJdbcStack);
             } else
-                stackClassificationList = List.of(segregatedJdbcStack).stream().collect(Collectors.toCollection(ArrayList::new));
+                stackClassificationList = List.of(segregatedJdbcStack).stream()
+                        .collect(Collectors.toCollection(ArrayList::new));
 
             classStackMap.put(segregatedJdbcStack.getStackCategory(), (ArrayList<StackClassification>) stackClassificationList);
 
@@ -144,10 +145,26 @@ public class PerfLogAnalyzerServiceImpl implements
 
         }
 
+        if (stack.getCallNode().contains(".dao.impl.")) {
+            log.info("parsing call :{}", stack.getCallNode());
+            StackClassification segregatedDaoStack = buildClassifiedStack(stack, StackCategory.DAO);
+            List<StackClassification> stackClassificationList;
+
+            if (classStackMap.get(StackCategory.DAO) != null) {
+                stackClassificationList = (classStackMap.get(StackCategory.DAO));
+                stackClassificationList.add(segregatedDaoStack);
+
+            } else
+                stackClassificationList = List.of(segregatedDaoStack).stream().collect(Collectors.toCollection(ArrayList::new));
+
+            classStackMap.put(segregatedDaoStack.getStackCategory(), (ArrayList<StackClassification>) stackClassificationList);
+
+        }
+
         List<CallStackModel> callStacks = stack.getSub();
         if (callStacks != null) {
             for (CallStackModel stk : callStacks) {
-                log.info("executing call stack {}", stk.toString());
+                log.debug("executing call stack {}", stk.toString());
                 analyzeCallStack(stk, classStackMap);
             }
         }

@@ -45,8 +45,8 @@ public class PinnacleIngestionQueryService {
     }
 
 
-    public void updateIngestionStatus(IngestionEventStatus status, List<String> perfLogIds) {
-        log.info("Service request to update the IngestionEvent status to {} for perLogIds {}"
+    public void updateIngestionStatus(IngestionEventStatus status, String perfLogIds) {
+        log.info("Service request to update the IngestionEvent status to {} for perLogId(s) {}"
                 ,status,perfLogIds);
 
 
