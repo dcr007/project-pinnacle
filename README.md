@@ -7,6 +7,4 @@ This will help us analyze the behavior pattern of various BizX modules and appli
 
 ### Architecture and Design Documentation
 
-High level architecture and design [is documented here](https://github.wdf.sap.corp/SF-PERF-ENGINEERING/Project-Pinnacle/blob/develop/design_docs/design-document.md#anomaly-detection-architecture)
-
-
+High level architecture and design [is documented here](design_docs%2Fdesign-document.md)
