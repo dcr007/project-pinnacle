@@ -4,6 +4,7 @@ import com.ondemand.pinnacle.analyzer.app.clients.constants.ingestion.IngestionE
 import com.ondemand.pinnacle.analyzer.models.StackClassification;
 import com.ondemand.pinnacle.analyzer.models.enums.StackCategory;
 import com.ondemand.pinnacle.analyzer.models.ingestion.PerfLogModel;
+import com.ondemand.pinnacle.analyzer.repository.StackClassificationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -27,8 +28,11 @@ public class ActionTriggerService {
     @Autowired
     PinnacleIngestionQueryService ingestionQueryService;
 
+//    @Autowired
+    PerfLogAnalyzerServiceImpl perfLogAnalyzerService ;
+
     @Autowired
-    PerfLogAnalyzerServiceImpl perfLogAnalyzerService;
+    StackClassificationRepository stackClassificationRepository;
 
     @Async("service-td")
     public void triggerQueuedAfterSleep() {
@@ -41,7 +45,9 @@ public class ActionTriggerService {
                 .findByIngestionStatus(IngestionEventStatus.ANALYZING);
         List<PerfLogModel> perfLogModelsInQueuedStatus =
                 Stream.of(perfLogModels).collect(Collectors.toList());
+
         List<Map<StackCategory, ArrayList<StackClassification>>> analyzedList = null;
+
         analyzedList = perfLogModelsInQueuedStatus.stream().map(this::analyze).collect(Collectors.toList());
         return Optional.of(analyzedList);
     }
@@ -99,7 +105,7 @@ public class ActionTriggerService {
             try{
                 ingestionQueryService.updateIngestionStatus(IngestionEventStatus.ANALYZING,perfLogModel.getPerfLogId());
                 log.info("analysis for perfLogId: {}\n", perfLogModel.getPerfLogId());
-                log.info(perfLogAnalyzerService.getCallStackAnalysis(perfLogModel).toString());
+//                log.info(perfLogAnalyzerService.getCallStackAnalysis(perfLogModel).toString());
             }catch (RuntimeException e){
                 log.error("Error while executing callStackAnalysis: {}",e.getMessage());
             }
@@ -111,8 +117,15 @@ public class ActionTriggerService {
             try{
 //                ingestionQueryService.updateIngestionStatus(IngestionEventStatus.ANALYZING,perfLogModel.getPerfLogId());
                 log.info("analysis for perfLogId: {}\n", perfLogModel.getPerfLogId());
+                perfLogAnalyzerService = new PerfLogAnalyzerServiceImpl(perfLogModel);
+
                 Map<StackCategory, ArrayList<StackClassification>> callStackAnalysis =
                         perfLogAnalyzerService.getCallStackAnalysis(perfLogModel);
+
+                for(var entry: callStackAnalysis.entrySet()){
+                    stackClassificationRepository.saveAll(entry.getValue());
+                }
+
 
                 log.info(callStackAnalysis.toString());
                 return callStackAnalysis;

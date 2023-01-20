@@ -10,6 +10,9 @@ import com.ondemand.pinnacle.analyzer.models.ingestion.CallStackModel;
 import com.ondemand.pinnacle.analyzer.models.ingestion.PerfLogModel;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,8 +33,14 @@ public class PerfLogAnalyzerServiceImpl implements
         PerfLogAnalyzerService<PerfLogModel, DwrPerfLogSummary, DwrAnalysisResult> {
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
+    private PerfLogModel perfLog;
+
+
+    PerfLogAnalyzerServiceImpl(@Autowired(required = false) PerfLogModel perfLogModel){
+        this.perfLog = perfLogModel;
+    }
     @Override
-    public DwrAnalysisResult generateReport(PerfLogModel perfLog) {
+    public DwrAnalysisResult generateReport( PerfLogModel perfLog) {
 
         log.info("Analysing perflog {}", perfLog.toString());
 
@@ -90,7 +99,7 @@ public class PerfLogAnalyzerServiceImpl implements
             } else
                 stackClassificationList = List.of(dwrStack).stream().collect(Collectors.toCollection(ArrayList::new));
 
-            classStackMap.put(dwrStack.getStackCategory(), (ArrayList<StackClassification>) stackClassificationList);
+                classStackMap.put(dwrStack.getStackCategory(), (ArrayList<StackClassification>) stackClassificationList);
         }
 
         if (stack.getCallNode().contains(".service.")) {
@@ -172,10 +181,10 @@ public class PerfLogAnalyzerServiceImpl implements
         return classStackMap;
 
     }
-
     private StackClassification buildClassifiedStack(CallStackModel stack, StackCategory service) {
         return new StackClassification()
                 .toBuilder()
+                .perfLogId(this.perfLog.getPerfLogId())
                 .qualifierName(stack.getCallNode())
                 .stackCategory(service)
                 .callId(stack.getCallStackId())

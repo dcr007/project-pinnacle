@@ -93,7 +93,8 @@ public class SplunkDataConsumers {
         return ResponseEntity.ok(analyzePerfLogService.analyzeCallStack(callStack, callCategoryMap));
     }
 
-    /*@PostMapping("/getAnalysisResult")
+    /*
+    @PostMapping("/getAnalysisResult")
     public ResponseEntity<AnalysisResult>
     parseCallStack(@RequestBody PerfLog perfLog) throws JsonProcessingException {
 
@@ -104,6 +105,7 @@ public class SplunkDataConsumers {
 
     @PostMapping("/saveCallStack")
     public String saveCallStack(@RequestBody CallStack callStack) {
+
         return callStackService.save(callStack);
     }
 
@@ -138,12 +140,8 @@ public class SplunkDataConsumers {
                 .map(IngestionEventQueueEntity::getPerfLogId).collect(Collectors.toList()) ;
         log.info("# perfLogIds fetched {}",perfLogIds.size());
         log.info("perfLogIds fetched {}",perfLogIds);
-
         List<PerfLog> perfLogsToBeProcessed = perfLogRepository.findByPerfLogIdIn(perfLogIds);
-
-
         return ResponseEntity.ok(perfLogsToBeProcessed);
     }
-
 
 }
