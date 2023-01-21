@@ -136,8 +136,8 @@ public class ActionTriggerService {
                     stackClassificationRepository.saveAll(entry.getValue());
                 }
 
-
-                log.info(callStackAnalysis.toString());
+                ingestionQueryService.updateIngestionStatus(IngestionEventStatus.ANALYZING_COMPLETE,perfLogModel.getPerfLogId());
+                log.info("Updated event status to {} for perfLogId {} ", IngestionEventStatus.ANALYZING_COMPLETE,perfLogModel.getPerfLogId());
                 return callStackAnalysis;
             }catch (RuntimeException e){
                 log.error("Error while executing callStackAnalysis: {}",e.getMessage());

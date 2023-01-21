@@ -11,6 +11,6 @@ public enum IngestionEventStatus {
     ANALYZING,
     ANOMALIES_DETECTED_TRUE,
     ANOMALIES_DETECTED_FALSE,
-    COMPLETE,
+    ANALYZING_COMPLETE,
     ERROR
 }

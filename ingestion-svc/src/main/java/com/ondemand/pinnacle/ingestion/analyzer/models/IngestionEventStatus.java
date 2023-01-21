@@ -16,7 +16,7 @@ public enum IngestionEventStatus {
     NON_OPERATIONAL,
     QUEUED,
     ANALYZING,
-    COMPLETE,
+    ANALYZING_COMPLETE,
     ERROR,
     NEEDS_REFRESH,
     DELETED,
