@@ -34,7 +34,7 @@ public class StackClassification implements Serializable {
     @Column(name ="perf_log_id", nullable = false)
     private String perfLogId;
 
-    @Column(name ="qualifier_name")
+    @Column(name ="qualifier_name",columnDefinition = "text") // unlimited size
     private String qualifierName;
 //    @JsonIgnore
     @Column(name ="stack_category")

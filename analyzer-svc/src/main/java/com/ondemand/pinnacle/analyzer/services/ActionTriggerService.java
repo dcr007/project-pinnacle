@@ -123,6 +123,16 @@ public class ActionTriggerService {
                         perfLogAnalyzerService.getCallStackAnalysis(perfLogModel);
 
                 for(var entry: callStackAnalysis.entrySet()){
+                    log.info("saving stackCategory key: {}",entry.getKey());
+
+                  /*  entry.getValue().forEach(
+                            stackClassification -> {
+                                log.info("saving PerfLog ID: {} and qualifierName: {}",
+                                        stackClassification.getPerfLogId(),
+                                        stackClassification.getQualifierName());
+                                        stackClassificationRepository.save(stackClassification);
+                            }
+                    );*/
                     stackClassificationRepository.saveAll(entry.getValue());
                 }
 

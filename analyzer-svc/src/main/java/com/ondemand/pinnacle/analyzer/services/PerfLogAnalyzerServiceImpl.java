@@ -173,7 +173,7 @@ public class PerfLogAnalyzerServiceImpl implements
         List<CallStackModel> callStacks = stack.getSub();
         if (callStacks != null) {
             for (CallStackModel stk : callStacks) {
-                log.debug("executing call stack {}", stk.toString());
+                log.debug("executing call stack for callNode :{}", stk.getCallNode());
                 analyzeCallStack(stk, classStackMap);
             }
         }
