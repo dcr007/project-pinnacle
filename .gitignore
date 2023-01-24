@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+## Data store
+../.DS_Store
+../mongo-db/data/

@@ -1,0 +1,18 @@
+version: '3'
+services:
+  studio-3t:
+    image: studio3t/studio3t
+    container_name: studio3t
+    ports:
+      - "8888:8888"
+    environment:
+      - TZ=America/New_York
+    volumes:
+      - ./data:/data
+    restart: always
+    networks:
+      - studio_net
+
+networks:
+  studio_net:
+    driver: bridge
