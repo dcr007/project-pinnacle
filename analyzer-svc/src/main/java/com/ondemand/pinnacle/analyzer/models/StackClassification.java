@@ -3,6 +3,7 @@ package com.ondemand.pinnacle.analyzer.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.ondemand.pinnacle.analyzer.models.enums.StackCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +27,7 @@ import java.io.Serializable;
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonPropertyOrder
 public class StackClassification implements Serializable {
     private static final long serialVersionUID = -1698763054978439285L;
     @Id
@@ -36,22 +38,23 @@ public class StackClassification implements Serializable {
 
     @Column(name ="qualifier_name",columnDefinition = "text") // unlimited size
     private String qualifierName;
-//    @JsonIgnore
+    @JsonIgnore
     @Column(name ="stack_category")
     @Enumerated(EnumType.STRING)
     private StackCategory stackCategory;
     @Column(name="has_threshold_exceeded")
     private boolean hasThresholdExceeded ;
 
-    @Column(name="call_id")
-    private String callId;
+//    @Column(name="call_id")
+//    private String callId;
+    @Column(name="is_metric_validated")
+    boolean isMetricValidated;
     @Column(name="invoked_count")
     long invokedCount;
     @Column(name="total_invoke_time_in_ms")
     long totalInvokeTimeInMs;
     @Column(name="execution_time_in_ms")
     long executionTimeInMs;
-
     @Column(name="distinct_sql_query_count")
     long distinctSqlQueryCount;
     @Column(name="total_sql_query_count")

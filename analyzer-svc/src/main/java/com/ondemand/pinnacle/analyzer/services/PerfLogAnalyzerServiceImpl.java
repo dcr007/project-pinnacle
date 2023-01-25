@@ -187,7 +187,7 @@ public class PerfLogAnalyzerServiceImpl implements
                 .perfLogId(this.perfLog.getPerfLogId())
                 .qualifierName(stack.getCallNode())
                 .stackCategory(service)
-                .callId(stack.getCallStackId())
+                .isMetricValidated(false)
                 .invokedCount(stack.getInvokedCount())
                 .totalInvokeTimeInMs(stack.getTotalInvokeTimeInMs())
                 .executionTimeInMs(stack.getExecutionTimeInMs())

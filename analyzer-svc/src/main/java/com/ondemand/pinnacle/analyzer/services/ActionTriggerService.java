@@ -51,6 +51,17 @@ public class ActionTriggerService {
         analyzedList = perfLogModelsInQueuedStatus.stream().map(this::analyze).collect(Collectors.toList());
         return Optional.of(analyzedList);
     }
+
+    public  Optional<List<Map<StackCategory, ArrayList<StackClassification>>>> triggerAnomalyDetection(){
+        Optional<List<Map<StackCategory, ArrayList<StackClassification>>>> classifiedMetrics = null;
+//        TODO: for each record in analyzer_svc_stack_classification table
+//         with NOT is_metric_validated() check if every given metric exceeds threshold set
+//         and update  has_threshold_exceeded
+//         then return classifiedMetrics
+
+        return classifiedMetrics;
+
+    }
     public Optional<List<PerfLogModel>> triggerQueued(boolean notify) {
         synchronized (this) {
 //            1. collect all Logs in Queued state
@@ -125,6 +136,7 @@ public class ActionTriggerService {
                 for(var entry: callStackAnalysis.entrySet()){
                     log.info("saving stackCategory key: {}",entry.getKey());
 
+                    stackClassificationRepository.saveAll(entry.getValue());
                   /*  entry.getValue().forEach(
                             stackClassification -> {
                                 log.info("saving PerfLog ID: {} and qualifierName: {}",
@@ -133,7 +145,7 @@ public class ActionTriggerService {
                                         stackClassificationRepository.save(stackClassification);
                             }
                     );*/
-                    stackClassificationRepository.saveAll(entry.getValue());
+
                 }
 
                 ingestionQueryService.updateIngestionStatus(IngestionEventStatus.ANALYZING_COMPLETE,perfLogModel.getPerfLogId());
