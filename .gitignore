@@ -36,3 +36,4 @@ build/
 ## Data store
 ../.DS_Store
 ../mongo-db/data/**
+ devops/mongo-db/data/**
