@@ -35,4 +35,4 @@ build/
 
 ## Data store
 ../.DS_Store
-../mongo-db/data/
+../mongo-db/data/**
