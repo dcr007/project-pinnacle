@@ -1,0 +1,37 @@
+@startuml
+header
+    auhor : i861116, date: 10/15/2021
+endheader
+
+title Data Ingestion - Splunk data scheduled and sent via Webhook
+footer
+
+endfooter
+
+actor Splunk_Server as splunk
+actor Mongo_DB as db
+
+rectangle  Data_Ingestion_Service_Layer {
+    usecase Dwr_Kafka_Queue as dwr_queue
+    usecase foreign_key_constrain_Kafka_Queue as fkc_queue
+    usecase DB_Authentication   as db_auth
+    usecase Service_Authentication as svc_auth
+    usecase Save_Data  as sav
+    usecase Hana_Deadlocks_Kafka_Queue as deadlock_Queue
+    usecase Process_Data as data_validation
+
+}
+left to right direction
+splunk --> deadlock_Queue : webhook
+splunk --> dwr_queue : webhook
+deadlock_Queue ..> svc_auth : <<uses>>
+fkc_queue ..> svc_auth : <<uses>>
+dwr_queue ..> svc_auth : <<uses>>
+
+deadlock_Queue ..> data_validation : <<push>>
+fkc_queue ..> data_validation : <<push>>
+dwr_queue ..> data_validation : <<push>>
+data_validation ..> sav : <<uses>>
+data_validation ..> db_auth : <<depends>>
+sav --> db
+@enduml
