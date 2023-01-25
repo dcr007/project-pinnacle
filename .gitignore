@@ -34,6 +34,7 @@ build/
 .vscode/
 
 ## Data store
+.DS_Store
 ../.DS_Store
-../mongo-db/data/**
- devops/mongo-db/data/**
+../mongo-db/data/*/*
+ devops/mongo-db/data/*/*
