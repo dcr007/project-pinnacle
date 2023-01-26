@@ -12,7 +12,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
-        - ./data:/data/db
+        - /var/lib/mongodb/data:/data/db
     restart: always
 
   mongodb-express:
