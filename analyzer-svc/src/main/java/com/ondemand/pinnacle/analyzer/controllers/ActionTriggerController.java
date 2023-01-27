@@ -43,6 +43,9 @@ public class ActionTriggerController {
                 resStatus=HttpStatus.OK;
                 return  ResponseEntity.of(this.actionTriggerService.triggerAnalyze(false));
             }
+            case VALIDATE:
+                resStatus=HttpStatus.OK;
+                return  ResponseEntity.of(this.actionTriggerService.triggerAnomalyDetection());
             case ALL:
             default:
                 throw new IllegalStateException("Unexpected value: " + type);

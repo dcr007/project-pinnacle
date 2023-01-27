@@ -1,0 +1,13 @@
+package MetricRules;
+
+import com.ondemand.pinnacle.analyzer.models.StackClassification;
+
+rule "ExecutionTime"
+
+when
+stackClassification: StackClassification(executionTimeInMs>10);
+then
+stackClassification.setHasThresholdExceeded(true);
+stackClassification.setMetricValidated(true);
+end;
+

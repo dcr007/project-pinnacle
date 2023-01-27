@@ -6,14 +6,12 @@ import com.ondemand.pinnacle.analyzer.models.enums.StackCategory;
 import com.ondemand.pinnacle.analyzer.models.ingestion.PerfLogModel;
 import com.ondemand.pinnacle.analyzer.repository.StackClassificationRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,6 +32,9 @@ public class ActionTriggerService {
     @Autowired
     StackClassificationRepository stackClassificationRepository;
 
+    @Autowired
+    private KieSession session;
+
     @Async("service-td")
     public void triggerQueuedAfterSleep() {
         this.delay(2);
@@ -52,14 +53,35 @@ public class ActionTriggerService {
         return Optional.of(analyzedList);
     }
 
-    public  Optional<List<Map<StackCategory, ArrayList<StackClassification>>>> triggerAnomalyDetection(){
+    public  Optional<List<StackClassification>> triggerAnomalyDetection(){
+
         Optional<List<Map<StackCategory, ArrayList<StackClassification>>>> classifiedMetrics = null;
+
+        List<StackClassification> stackClassification = new ArrayList<>();
+
 //        TODO: for each record in analyzer_svc_stack_classification table
 //         with NOT is_metric_validated() check if every given metric exceeds threshold set
 //         and update  has_threshold_exceeded
 //         then return classifiedMetrics
 
-        return classifiedMetrics;
+        PerfLogModel[] perfLogModels = ingestionQueryService
+                .findByIngestionStatus(IngestionEventStatus.ANALYZING_COMPLETE);
+        List<String> perfLogIdsToBeValidated = Arrays.stream(perfLogModels).map(PerfLogModel::getPerfLogId)
+                .collect(Collectors.toList());
+        
+
+        perfLogIdsToBeValidated.forEach(id ->{
+            List<StackClassification> listOfStackClassifications =
+                    stackClassificationRepository.findByPerfLogId(id);
+            stackClassification.addAll(listOfStackClassifications);
+            listOfStackClassifications.forEach(stack ->{
+                session.insert(stack);
+                session.fireAllRules();
+            });
+        });
+        stackClassificationRepository.saveAll(stackClassification);
+        return stackClassification.size()>0?
+                Optional.of(stackClassification):Optional.empty();
 
     }
     public Optional<List<PerfLogModel>> triggerQueued(boolean notify) {
