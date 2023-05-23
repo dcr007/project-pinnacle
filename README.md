@@ -12,7 +12,7 @@ The process of issue detection, identification and troubleshooting is:
 - Manual process
 - Time consuming.
 
-This has direct impact on customer experience using our application.
+This has direct impact on customer experience using the application.
 
 ## Idea Statement
 
