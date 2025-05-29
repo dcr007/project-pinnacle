@@ -14,8 +14,8 @@
 
 | ***Date*** | ***Version*** |  ***Authors***    | ***Comments***                                                 |
 |:-----------|    :---      | :---  |:---------------------------------------------------------------|  
-| 10/20/2022 | V0.1 | Dowlathram, Chanduram <chanduram.dowlathram@sap.com>| 1.Initial draft created. <br> 2.Includes Technical specs.      |
-| 11/05/2022 | V0.12 | Dowlathram, Chanduram <chanduram.dowlathram@sap.com>| 1. Included Functional Requirements on  Data Ingestion Service |
+| 10/20/2022 | V0.1 | Dowlathram, Chanduram | 1.Initial draft created. <br> 2.Includes Technical specs.      |
+| 11/05/2022 | V0.12 | Dowlathram, Chanduram | 1. Included Functional Requirements on  Data Ingestion Service |
 
 ## Overview
 This initiative is to build a Observability platform that will focus on error detection and identification for the currently identified areas of 
