@@ -40,7 +40,7 @@ Hence, monitoring DWR invocation performance is very critical to achieve pleasan
 - **Count of active deadlocks** - Based on the results from this Hana service-layer splunk dashboard . We do see there are around 132 active row locks in just last 24 hours time period. This JIRA-LRN-132689 reported is to address one such dead-lock issue caused high volume of row locks.  Analyzing and reporting on all 132 active row locks manually may not be very effective approach.
 - **Insights on errors on "update or delete by foreign key constraint violation"** - Multiple occurrences of the error "failed on update or delete by foreign key constraint violation:".This is observed various tables across different DC's. 
 
-More uses cases documented in [the confluence here](https://confluence.successfactors.com/display/ENG/Data+Insights+for+error+detection+and+identification+of+performance+anomalies)
+
 ## Functional Requirements
 
 ### Data Ingestion Service 
