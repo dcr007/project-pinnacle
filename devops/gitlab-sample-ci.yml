@@ -1,0 +1,138 @@
+include:
+  - project: 'security/security-ci-includes'
+    file: 'security.yml'
+    rules:
+      - if: $CI_COMMIT_BRANCH =~ /^(main|release.*|hotfix.*|)$/
+
+variables:
+  ARTIFACTORY_BASE_URL: "https://jfrog-artifactory.ews.int/artifactory/helm-api-gateway-dev"
+  SECURE_ANALYZERS_PREFIX: "security-dev.registry.ews.int/vendored/registry.gitlab.com/gitlab-org/security-products/analyzers"
+  VERACODE_FILEPATH: "build/libs/*.jar"
+  VERACODE_APP_NAME: "api-gateway"
+  SRC_DIR_FILES: "src/*"
+  PROXY_HOST: "corpwproxy.ews.int"
+  PROXY_PORT: 8080
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+  MAVEN_INSTALL_VERSION: "3.6.3"
+  JDK: "java-11-openjdk-devel"
+  GRADLE_INSTALL_VERSION: "7.4.1"
+  NODE_VERSION: "16"
+  NODEJS_VERSION: "16"
+
+stages:
+  - scan
+  - helm-push-gateway
+  - helm-push-wiremock
+  - helm-push-otel
+  - tag
+
+helm-push-gateway:
+  stage: helm-push-gateway
+  image: devops-dev.registry.ews.int/pks/helm:3.5.4
+  tags:
+    - helm
+  variables:
+    APP_NAME: "tyk-gateway"
+  before_script:
+    - |
+      if [ -d ${APP_NAME} ]; then
+        echo "${APP_NAME} Helm folder found - proceeding with upload."
+      else
+        echo "Helm folder NOT found - skipping upload."
+        exit 1
+      fi
+  script:
+    - helm package ${APP_NAME}  --app-version=${CI_PIPELINE_ID} --version=${CI_PIPELINE_ID}
+    # Upload path per https://early-warning.atlassian.net/wiki/spaces/APIA/pages/90566133950/Jfrog+Artifactory+Docker+Registry+and+Repository+Structure#Helm-Repository-Structure
+    - curl -v -X PUT --user ${JFROG_USER}:${JFROG_PASS} --upload-file ${APP_NAME}-${CI_PIPELINE_ID}.tgz ${ARTIFACTORY_BASE_URL}/${APP_NAME}/${APP_NAME}-${CI_PIPELINE_ID}.tgz
+  allow_failure: true     # If no Helm folder, this stage will fail (and that is okay)
+  rules:                  # Further, this stage should only run if there are Helm changes
+    - if: $CI_COMMIT_BRANCH =~ /^(main|release.*|hotfix.*)$/
+      changes:
+        - ${APP_NAME}/**
+        - ${APP_NAME}/**/*
+    - if: $DEV_IMAGE_APP == "GATEWAY"
+
+helm-push-wiremock:
+  stage: helm-push-wiremock
+  image: devops-dev.registry.ews.int/pks/helm:3.5.4
+  tags:
+    - helm
+  variables:
+    APP_NAME: "wiremock"
+  before_script:
+    - |
+      if [ -d ${APP_NAME} ]; then
+        echo "${APP_NAME} Helm folder found - proceeding with upload."
+      else
+        echo "Helm folder NOT found - skipping upload."
+        exit 1
+      fi
+  script:
+    - helm package ${APP_NAME}  --app-version=${CI_PIPELINE_ID} --version=${CI_PIPELINE_ID}
+    # Upload path per https://early-warning.atlassian.net/wiki/spaces/APIA/pages/90566133950/Jfrog+Artifactory+Docker+Registry+and+Repository+Structure#Helm-Repository-Structure
+    - curl -v -X PUT --user ${JFROG_USER}:${JFROG_PASS} --upload-file ${APP_NAME}-${CI_PIPELINE_ID}.tgz ${ARTIFACTORY_BASE_URL}/${APP_NAME}/${APP_NAME}-${CI_PIPELINE_ID}.tgz
+  allow_failure: true     # If no Helm folder, this stage will fail (and that is okay)
+  rules:                  # Further, this stage should only run if there are Helm changes
+    - if: $CI_COMMIT_BRANCH =~ /^(main|release.*|hotfix.*)$/
+      changes:
+        - ${APP_NAME}/**
+        - ${APP_NAME}/**/*
+    - if: $DEV_IMAGE_APP == "WIREMOCK"
+
+helm-push-otel:
+  stage: helm-push-otel
+  image: devops-dev.registry.ews.int/pks/helm:3.5.4
+  tags:
+    - helm
+  variables:
+    APP_NAME: "opentelemetry-gateway"
+  before_script:
+    - |
+      if [ -d ${APP_NAME} ]; then
+        echo "${APP_NAME} Helm folder found - proceeding with upload."
+      else
+        echo "Helm folder NOT found - skipping upload."
+        exit 1
+      fi
+  script:
+    - helm package ${APP_NAME}  --app-version=${CI_PIPELINE_ID} --version=${CI_PIPELINE_ID}
+    # Upload path per https://early-warning.atlassian.net/wiki/spaces/APIA/pages/90566133950/Jfrog+Artifactory+Docker+Registry+and+Repository+Structure#Helm-Repository-Structure
+    - curl -v -X PUT --user ${JFROG_USER}:${JFROG_PASS} --upload-file ${APP_NAME}-${CI_PIPELINE_ID}.tgz ${ARTIFACTORY_BASE_URL}/${APP_NAME}/${APP_NAME}-${CI_PIPELINE_ID}.tgz
+  allow_failure: true     # If no Helm folder, this stage will fail (and that is okay)
+  rules:                  # Further, this stage should only run if there are Helm changes
+    - if: $CI_COMMIT_BRANCH =~ /^(main|release.*|hotfix.*)$/
+      changes:
+        - ${APP_NAME}/**
+        - ${APP_NAME}/**/*
+    - if: $DEV_IMAGE_APP == "OTEL"
+
+tag-source:
+  stage: tag
+  image: devops-dev.registry.ews.int/ews-cm/cm-ubi-java-mvn-gradle:jdk_${JDK}_mvn_${MAVEN_INSTALL_VERSION}_gradle_${GRADLE_INSTALL_VERSION}_nodejs_${NODEJS_VERSION}
+  tags:
+    - shared-shell-docker
+  variables:
+    GIT_DEPTH: 10
+  script:
+    - |
+      echo "$CI_COMMIT_BRANCH branch detected, attempting to create git tag"      
+      git config user.email "project_${CI_PROJECT_ID}_bot" 
+      git config user.name "project${CI_PROJECT_ID}_bot@example.com"                       
+      if git config remote.central.url > /dev/null; then
+        echo "remove existing remote and procceed"
+        git remote rm central && git remote add central https://gitlab-ci-token:${GITLAB_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
+      else
+        echo "adding remote and procceed"
+        git remote add central https://gitlab-ci-token:${GITLAB_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
+      fi
+      echo "add a tag - ${CI_COMMIT_BRANCH}-${CI_PIPELINE_ID} "      
+      git tag -f -a "${CI_COMMIT_BRANCH}-${CI_PIPELINE_ID}" -m "Tagged by CI pipeline: ${CI_PIPELINE_ID} branch: ${CI_COMMIT_BRANCH} "   
+      git push central --tags --verbose
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^(main|release.*|hotfix.*)$/
+    - if: $DEV_IMAGE_APP == "GATEWAY"
+    - if: $DEV_IMAGE_APP == "WIREMOCK"
+    - if: $DEV_IMAGE_APP == "OTEL"
+    - when: never
